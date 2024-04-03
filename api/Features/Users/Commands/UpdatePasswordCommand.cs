@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using tweeter.Features.Users.Dtos;
 using tweeter.Shared;
 
@@ -37,8 +36,6 @@ public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordComman
         }
 
         var user = _userManager.Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
             .FirstOrDefault(x => x.UserName == command.PasswordUpdateDto.UserName);
 
         if (user is null)

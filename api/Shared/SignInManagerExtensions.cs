@@ -17,8 +17,6 @@ public static class SignInManagerExtensions
         
         return await userManager
             .Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
             .FirstOrDefaultAsync(x => x.NormalizedUserName == normalizedUserName);
     }
 }
