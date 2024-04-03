@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using tweeter.Features.Users;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users;
+namespace tweeter.Controllers;
 
 [ApiController]
 [Route("/api/users")]
