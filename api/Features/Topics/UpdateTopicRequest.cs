@@ -66,7 +66,7 @@ public class UpdateTopicRequestHandler : IRequestHandler<UpdateTopicRequest, Res
 
 public class UpdateTopicCommandValidator : AbstractValidator<UpdateTopicRequest>
 {
-    public UpdateTopicCommandValidator(IValidator<TopicDto> baseValidator)
+    public UpdateTopicCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty();

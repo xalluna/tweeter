@@ -41,7 +41,6 @@ public class UserTopicMapper : Profile
 
 public class UserTopicConfiguration : IEntityTypeConfiguration<UserTopic>
 {
-
     public void Configure(EntityTypeBuilder<UserTopic> builder)
     {
         builder.ToTable("UserTopics", "schema");

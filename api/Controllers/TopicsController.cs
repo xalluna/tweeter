@@ -68,6 +68,4 @@ public class TopicsController: ControllerBase
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
-    
-    
 }

@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using tweeter.Data;
-using tweeter.Features.Topics;
 using tweeter.Features.UserTopics;
 using tweeter.Shared;
 
