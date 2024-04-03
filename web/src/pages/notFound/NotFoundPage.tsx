@@ -1,7 +1,14 @@
-import { createStyles, Title, Text, rem, Image, Center } from '@mantine/core';
+import {
+  createStyles,
+  Title,
+  Text,
+  rem,
+  Image,
+  Center,
+  Button,
+} from '@mantine/core';
 import { routes } from '../../routes/index';
 import { useNavigate } from 'react-router-dom';
-import { PrimaryButton } from '../../components/buttons/PrimaryButton';
 import { IconHome } from '@tabler/icons-react';
 import { Illustration } from './Illustration';
 
@@ -29,7 +36,7 @@ export function NotFoundPage(): React.ReactElement {
           address. The page may have been moved to another URL.
         </Text>
         <Center>
-          <PrimaryButton
+          <Button
             size="lg"
             variant="filled"
             leftIcon={<IconHome />}
@@ -38,7 +45,7 @@ export function NotFoundPage(): React.ReactElement {
             }}
           >
             Return to Home Page
-          </PrimaryButton>
+          </Button>
         </Center>
       </div>
     </div>

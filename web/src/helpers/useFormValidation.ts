@@ -13,7 +13,7 @@ export function useFormValidation() {
     return !emailRegex.test(email);
   };
 
-  const validatePhoneNumer = (phoneNumber: string) => {
+  const validatePhoneNumber = (phoneNumber: string) => {
     return !phoneNumberRegex.test(phoneNumber);
   };
 
@@ -24,7 +24,7 @@ export function useFormValidation() {
   return {
     validateTextInput,
     validateEmail,
-    validatePhoneNumer,
+    validatePhoneNumber,
     validatePassword,
   };
 }

@@ -1,12 +1,4 @@
-import {
-  ActionIcon,
-  CSSObject,
-  Flex,
-  Image,
-  MantineTheme,
-  Menu,
-  Navbar,
-} from '@mantine/core';
+import { ActionIcon, CSSObject, Flex, MantineTheme, Menu, Navbar } from '@mantine/core';
 import {
   IconCameraPlus,
   IconCards,
@@ -18,109 +10,68 @@ import {
   IconSettings,
   IconUser,
 } from '@tabler/icons-react';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { NavButton } from './NavButton';
-import { LoginModal } from '../components/modals/AuthModals/LoginModal';
-import { RegisterModal } from '../components/modals/AuthModals/RegisterModal';
-import { useDisclosure } from '@mantine/hooks';
 import { useNavbarHeight } from '../hooks/useNavbarHeight';
 import { useNavigate } from 'react-router-dom';
-import { signOutUser } from '../services/authServices';
-import { dispatch, useAppSelector } from '../store/configureStore';
-import { routes } from '../routes/index';
 import { NavMenuButton } from './NavMenuButton';
+import { routes } from '../routes';
 
 export function PrimaryNavigation(): React.ReactElement {
   const navigate = useNavigate();
   const { navbarHeight } = useNavbarHeight();
 
-  const signedInUser = useAppSelector((state) => state.user.user);
-
-  const [loginState, login] = useDisclosure(false);
-  const [registerState, register] = useDisclosure(false);
-
-  const handleSignOut = () => {
-    dispatch(signOutUser());
-    navigate(routes.home);
-  };
-
-  const determineUserState = useMemo(() => {
-    return signedInUser === undefined || signedInUser === null ? false : true;
-  }, [signedInUser]);
-
-  const isAdmin = useMemo(() => {
-    if (!determineUserState || !signedInUser) {
-      return false;
-    }
-    const isAdmin: number = signedInUser.roles.findIndex(
-      (r) => r.name === 'Admin'
-    );
-    return isAdmin !== -1;
-  }, [determineUserState, signedInUser]);
-
   return (
     <>
       <Navbar height={navbarHeight} sx={navbarSx}>
-        <NavButton route={routes.home} sx={logoIconSx}>
-          <Image maw={navbarHeight - 16} src="./tweeterLogo2.svg" />
-        </NavButton>
+        <NavButton route={routes.home} sx={logoIconSx}></NavButton>
         <Flex align={'center'} gap={25}>
-          {determineUserState && (
-            <Flex gap={10}>
-              {isAdmin && (
-                <NavButton route={routes.adminPortal}>Admin Portal</NavButton>
-              )}
+          <Flex gap={10}>
+            <NavButton route={routes.adminPortal}>Admin Portal</NavButton>
 
-              <Menu>
-                <Menu.Target>
-                  <NavMenuButton
-                    name="Cards"
-                    itemRoutes={[routes.inventory, routes.cardUpload]}
-                  />
-                </Menu.Target>
+            <Menu>
+              <Menu.Target>
+                <NavMenuButton name="Cards" itemRoutes={[routes.inventory, routes.cardUpload]} />
+              </Menu.Target>
 
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={() => navigate(routes.inventory)}
-                    icon={<IconCards size="1.25em" />}
-                  >
-                    View Cards
-                  </Menu.Item>
+              <Menu.Dropdown>
+                <Menu.Item
+                  onClick={() => navigate(routes.inventory)}
+                  icon={<IconCards size="1.25em" />}
+                >
+                  View Cards
+                </Menu.Item>
 
-                  <Menu.Item
-                    onClick={() => navigate(routes.cardUpload)}
-                    icon={<IconCameraPlus size="1.25em" />}
-                  >
-                    Upload Cards
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-              <Menu>
-                <Menu.Target>
-                  <NavMenuButton
-                    name="Decks"
-                    itemRoutes={[routes.decks, routes.deckBuilder]}
-                  />
-                </Menu.Target>
+                <Menu.Item
+                  onClick={() => navigate(routes.cardUpload)}
+                  icon={<IconCameraPlus size="1.25em" />}
+                >
+                  Upload Cards
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+            <Menu>
+              <Menu.Target>
+                <NavMenuButton name="Decks" itemRoutes={[routes.decks, routes.deckBuilder]} />
+              </Menu.Target>
 
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={() => navigate(routes.decks)}
-                    icon={<IconLayoutCards size="1.25em" />}
-                  >
-                    View Decks
-                  </Menu.Item>
+              <Menu.Dropdown>
+                <Menu.Item
+                  onClick={() => navigate(routes.decks)}
+                  icon={<IconLayoutCards size="1.25em" />}
+                >
+                  View Decks
+                </Menu.Item>
 
-                  <Menu.Item
-                    onClick={() => navigate(routes.deckBuilder)}
-                    icon={<IconPlaylistAdd size="1.25em" />}
-                  >
-                    Deck Builder
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Flex>
-          )}
+                <Menu.Item
+                  onClick={() => navigate(routes.deckBuilder)}
+                  icon={<IconPlaylistAdd size="1.25em" />}
+                >
+                  Deck Builder
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Flex>
 
           <Menu>
             <Menu.Target>
@@ -129,42 +80,27 @@ export function PrimaryNavigation(): React.ReactElement {
               </ActionIcon>
             </Menu.Target>
 
-            {!determineUserState && (
-              <Menu.Dropdown>
-                <Menu.Item icon={<IconLogin size={14} />} onClick={login.open}>
-                  Login
-                </Menu.Item>
-                <Menu.Item
-                  icon={<IconRegistered size={14} />}
-                  onClick={register.open}
-                >
-                  Register
-                </Menu.Item>
-              </Menu.Dropdown>
-            )}
+            <Menu.Dropdown>
+              <Menu.Item icon={<IconLogin size={14} />} onClick={null}>
+                Login
+              </Menu.Item>
+              <Menu.Item icon={<IconRegistered size={14} />} onClick={null}>
+                Register
+              </Menu.Item>
+            </Menu.Dropdown>
 
-            {determineUserState && (
-              <Menu.Dropdown>
-                <Menu.Item
-                  icon={<IconSettings size={14} />}
-                  onClick={() => navigate(routes.settings)}
-                >
-                  Settings
-                </Menu.Item>
-                <Menu.Item
-                  icon={<IconLogout size={14} />}
-                  onClick={handleSignOut}
-                >
-                  Logout
-                </Menu.Item>
-              </Menu.Dropdown>
-            )}
+            <Menu.Dropdown>
+              <Menu.Item
+                icon={<IconSettings size={14} />}
+                onClick={() => navigate(routes.settings)}
+              >
+                Settings
+              </Menu.Item>
+              <Menu.Item icon={<IconLogout size={14} />}>Logout</Menu.Item>
+            </Menu.Dropdown>
           </Menu>
         </Flex>
       </Navbar>
-
-      <LoginModal open={loginState} setOpen={login.close} />
-      <RegisterModal open={registerState} setOpen={register.close} />
     </>
   );
 }
