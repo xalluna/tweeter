@@ -3,25 +3,25 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users.Queries;
+namespace tweeter.Features.Users;
 
-public class GetSignedInUserQuery : IRequest<Response<UserGetDto>>
+public class GetSignedInUserRequest : IRequest<Response<UserGetDto>>
 {
 }
 
-public class GetSignedInUserQueryHandler : IRequestHandler<GetSignedInUserQuery, Response<UserGetDto>>
+public class GetSignedInUserRequestHandler : IRequestHandler<GetSignedInUserRequest, Response<UserGetDto>>
 {
     private readonly SignInManager<User> _signInManager;
     private readonly IMapper _mapper;
 
-    public GetSignedInUserQueryHandler(SignInManager<User> signInManager,
+    public GetSignedInUserRequestHandler(SignInManager<User> signInManager,
         IMapper mapper)
     {
         _signInManager = signInManager;
         _mapper = mapper;
     }
     
-    public async Task<Response<UserGetDto>> Handle(GetSignedInUserQuery request, CancellationToken cancellationToken)
+    public async Task<Response<UserGetDto>> Handle(GetSignedInUserRequest request, CancellationToken cancellationToken)
     {
         var user = await _signInManager.GetSignedInUserAsync();
 

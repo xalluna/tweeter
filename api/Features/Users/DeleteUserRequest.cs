@@ -3,27 +3,27 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using tweeter.Data;
-using tweeter.Features.Users.Dtos;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users.Commands;
+namespace tweeter.Features.Users;
 
-public class DeleteUserCommand : IRequest<Response>
+public class DeleteUserRequest : IRequest<Response>
 {
-    public UserDeleteDto DeleteDto { get; set; }
+    public string Password { get; set; }
+    public string ConfirmPassword { get; set; }
 }
 
-public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Response>
+public class DeleteUserRequestHandler : IRequestHandler<DeleteUserRequest, Response>
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
-    private readonly IValidator<DeleteUserCommand> _validator;
+    private readonly IValidator<DeleteUserRequest> _validator;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
-    public DeleteUserCommandHandler(DataContext dataContext,
+    public DeleteUserRequestHandler(DataContext dataContext,
         IMapper mapper,
-        IValidator<DeleteUserCommand> validator,
+        IValidator<DeleteUserRequest> validator,
         UserManager<User> userManager,
         SignInManager<User> signInManager
         )
@@ -34,9 +34,9 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Respo
         _userManager = userManager;
         _signInManager = signInManager;
     }
-    public async Task<Response> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -51,8 +51,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Respo
             return Error.AsResponse("Unable to determine User", "user");
         }
 
-        var correctPassword = await _userManager
-            .CheckPasswordAsync(user, command.DeleteDto.Password);
+        var correctPassword = await _userManager .CheckPasswordAsync(user, request.Password);
 
         if(!correctPassword)
         {
@@ -70,5 +69,20 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Respo
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return Response.Success;
+    }
+}
+
+public class DeleteUserRequestValidator : AbstractValidator<DeleteUserRequest>
+{
+    public DeleteUserRequestValidator()
+    {
+        RuleFor(x => x.Password)
+            .NotEmpty();
+
+        RuleFor(x => x.ConfirmPassword)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .Equal(x => x.Password)
+            .WithMessage("Passwords do not match.");
     }
 }

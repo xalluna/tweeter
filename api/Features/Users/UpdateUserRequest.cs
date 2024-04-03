@@ -5,23 +5,22 @@ using Microsoft.AspNetCore.Identity;
 using tweeter.Data;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users.Commands;
+namespace tweeter.Features.Users;
 
-public class UpdateUserCommand : IRequest<Response<UserGetDto>>
+public class UpdateUserRequest : UserDto, IRequest<Response<UserGetDto>>
 {
     public int Id { get; set; }
-    public UserDto User { get; set; }
 }
 
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<UserGetDto>>
+public class UpdateUserRequestHandler : IRequestHandler<UpdateUserRequest, Response<UserGetDto>>
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
-    private readonly IValidator<UpdateUserCommand> _validator;
+    private readonly IValidator<UpdateUserRequest> _validator;
     private readonly UserManager<User> _userManager;
 
-    public UpdateUserCommandHandler(DataContext dataContext,
-        IValidator<UpdateUserCommand> validator,
+    public UpdateUserRequestHandler(DataContext dataContext,
+        IValidator<UpdateUserRequest> validator,
         UserManager<User> userManager,
         IMapper mapper)
     {
@@ -31,9 +30,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Respo
         _userManager = userManager;
     }
 
-    public async Task<Response<UserGetDto>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
+    public async Task<Response<UserGetDto>> Handle(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -42,14 +41,14 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Respo
         }
 
         var user = _userManager.Users
-            .SingleOrDefault(x => x.Id == command.Id);
+            .SingleOrDefault(x => x.Id == request.Id);
 
         if (user is null)
         {
             return Error.AsResponse<UserGetDto>("User not found", "id");
         }
 
-        _mapper.Map(command.User, user);
+        _mapper.Map(request, user);
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
@@ -61,5 +60,16 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Respo
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<UserGetDto>(user).AsResponse();
+    }
+}
+
+public class UpdateUserCommandValidator : AbstractValidator<UpdateUserRequest>
+{
+    public UpdateUserCommandValidator(IValidator<UserDto> baseValidator)
+    {
+        Include(baseValidator);
+        
+        RuleFor(x => x.Id)
+            .GreaterThan(0);
     }
 }
