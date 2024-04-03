@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using tweeter.Features.Users;
+using tweeter.Features.UserTopics;
 using tweeter.Shared;
 
 namespace tweeter.Controllers;
@@ -90,6 +91,23 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<Response<List<UserDto>>>> GetSignedInUser()
     {
         var response = await _mediator.Send(new GetSignedInUserRequest());
+
+        return response.HasErrors ? BadRequest(response) : Ok(response);
+    }
+
+    [HttpPost("subscribe/{topicId}", Name = nameof(Subscribe))]
+    public async Task<ActionResult<Response<UserTopicDto>>> Subscribe([FromRoute] int topicId)
+    {
+        var response = await _mediator.Send(new SubscribeToTopicRequest(topicId));
+
+        return response.HasErrors ? BadRequest(response)
+            : CreatedAtRoute(nameof(Subscribe), new { response.Data.UserId, response.Data.TopicId }, response);
+    }
+
+    [HttpPost("unsubscribe/{topicId}")]
+    public async Task<ActionResult<Response>> Unsubscribe([FromRoute] int topicId)
+    {
+        var response = await _mediator.Send(new UnsubscribeFromTopicRequest(topicId));
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
