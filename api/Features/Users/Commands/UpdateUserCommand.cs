@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using tweeter.Data;
 using tweeter.Shared;
 
@@ -43,8 +42,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Respo
         }
 
         var user = _userManager.Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
             .SingleOrDefault(x => x.Id == command.Id);
 
         if (user is null)

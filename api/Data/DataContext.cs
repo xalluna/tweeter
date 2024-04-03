@@ -2,13 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using tweeter.Features.Roles;
-using tweeter.Features.UserRoles;
 using tweeter.Features.Users;
 
 namespace tweeter.Data;
 
-public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>> 
+public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
@@ -18,6 +16,8 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<IdentityRole<int>>().ToTable("AspNetRoles", "identity");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles", "identity");
         modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AspNetUserClaims", "identity");
         modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AspNetUserLogins", "identity");
         modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("AspNetRoleClaims", "identity");

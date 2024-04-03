@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using tweeter.Shared;
 
 namespace tweeter.Features.Users.Queries;
@@ -38,8 +37,6 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Respons
         }
 
         var user = _userManager.Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
             .SingleOrDefault(x => x.Id == query.Id);
 
         if (user is null) return Error.AsResponse<UserGetDto>("User not found", "id");

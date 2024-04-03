@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using tweeter.Data;
 using tweeter.Features.Users;
-using tweeter.Features.Roles;
 using tweeter.Settings;
 using tweeter.Shared;
 
@@ -38,9 +37,9 @@ public class Startup
 
     private void ConfigureIdentity(IServiceCollection services)
     {
-        services.AddIdentity<User, Role>()  
-            .AddRoles<Role>()
-            .AddRoleManager<RoleManager<Role>>()
+        services.AddIdentity<User, IdentityRole<int>>()  
+            .AddRoles<IdentityRole<int>>()
+            .AddRoleManager<RoleManager<IdentityRole<int>>>()
             .AddUserManager<UserManager<User>>()
             .AddSignInManager<SignInManager<User>>()
             .AddEntityFrameworkStores<DataContext>()

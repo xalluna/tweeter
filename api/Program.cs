@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using tweeter;
-using tweeter.Features.Roles;
 using tweeter.Features.Users;
 using tweeter.Data;
 using tweeter.Shared;
@@ -39,11 +38,10 @@ void SeedData(IApplicationBuilder app)
     var scoped = app.ApplicationServices.CreateScope();
 
     var userManager = scoped.ServiceProvider.GetService<UserManager<User>>();
-    var roleManager = scoped.ServiceProvider.GetService<RoleManager<Role>>();
 
     var dataContext = scoped.ServiceProvider.GetService<DataContext>();
     dataContext.Database.Migrate();
-    dataContext.Seed(userManager, roleManager);
+    dataContext.Seed(userManager);
 }
 
 app.Run();

@@ -33,8 +33,6 @@ public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Respo
         
         var user = await _userManager
             .Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
             .FirstOrDefaultAsync(x => x.NormalizedUserName == normalizedUserName, c);
         
         if (user is null) return Error.AsResponse<UserGetDto>("Username or password is incorrect");
@@ -47,7 +45,6 @@ public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Respo
 
         if (result.RequiresTwoFactor)
         {
-            //TODO: Implement 2FA
             return Error.AsResponse<UserGetDto>("2FA not implemented 💔");
         }
 
