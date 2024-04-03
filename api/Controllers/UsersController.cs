@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using tweeter.Features.Users.Commands;
-using tweeter.Features.Users.Dtos;
-using tweeter.Features.Users.Queries;
+using tweeter.Features.Users;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users;
+namespace tweeter.Controllers;
 
 [ApiController]
 [Route("/api/users")]
@@ -21,7 +19,7 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Response<List<UserDto>>>> GetAllUsers()
     {
-        var response = await _mediator.Send(new GetAllUsersQuery());
+        var response = await _mediator.Send(new GetAllUsersRequest());
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
@@ -29,15 +27,15 @@ public class UsersController : ControllerBase
     [HttpGet("{id:int}", Name = nameof(GetUserById))]
     public async Task<ActionResult<Response<UserGetDto>>> GetUserById([FromRoute] int id)
     {
-        var response = await _mediator.Send(new GetUserByIdQuery { Id = id });
+        var response = await _mediator.Send(new GetUserByIdRequest { Id = id });
 
         return response.HasErrors ? NotFound(response) : Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Response<UserGetDto>>> CreateUser([FromBody] UserCreateDto data)
+    public async Task<ActionResult<Response<UserGetDto>>> CreateUser([FromBody] CreateUserRequest request)
     {
-        var response = await _mediator.Send(new CreateUserCommand { User = data });
+        var response = await _mediator.Send(request);
 
         return response.HasErrors
             ? BadRequest(response)
@@ -46,34 +44,36 @@ public class UsersController : ControllerBase
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Response<UserGetDto>>> UpdateUser([FromRoute] int id,
-        [FromBody] UserDto data)
+        [FromBody] UpdateUserRequest request)
     {
-        var response = await _mediator.Send(new UpdateUserCommand { Id = id, User = data });
+        request.Id = id;
+        
+        var response = await _mediator.Send(request);
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
     [HttpPut("password-update", Name = nameof(UpdatePassword))]
     public async Task<ActionResult<Response<UserGetDto>>> UpdatePassword(
-        [FromBody] UserPasswordUpdateDto data)
+        [FromBody] UpdatePasswordRequest request)
     {
-        var response = await _mediator.Send(new UpdatePasswordCommand { PasswordUpdateDto = data });
+        var response = await _mediator.Send(request);
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<Response>> DeleteUser([FromBody] UserDeleteDto deleteDto)
+    public async Task<ActionResult<Response>> DeleteUser([FromBody] DeleteUserRequest request)
     {
-        var response = await _mediator.Send(new DeleteUserCommand { DeleteDto = deleteDto });
+        var response = await _mediator.Send(request);
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
     [HttpPost("sign-in")]
-    public async Task<ActionResult<Response<UserGetDto>>> SignInUser(SignInUserDto data)
+    public async Task<ActionResult<Response<UserGetDto>>> SignInUser(SignInUserRequest request)
     {
-        var response = await _mediator.Send(new SignInUserCommand {Data = data});
+        var response = await _mediator.Send(request);
         
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
@@ -81,7 +81,7 @@ public class UsersController : ControllerBase
     [HttpPost("sign-out")]
     public async Task<ActionResult<Response>> SignInUser()
     {
-        var response = await _mediator.Send(new SignOutUserCommand());
+        var response = await _mediator.Send(new SignOutUserRequest());
         
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
@@ -89,7 +89,7 @@ public class UsersController : ControllerBase
     [HttpGet("signed-in-user")]
     public async Task<ActionResult<Response<List<UserDto>>>> GetSignedInUser()
     {
-        var response = await _mediator.Send(new GetSignedInUserQuery());
+        var response = await _mediator.Send(new GetSignedInUserRequest());
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }

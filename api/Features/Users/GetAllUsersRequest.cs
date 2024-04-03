@@ -4,25 +4,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users.Queries;
+namespace tweeter.Features.Users;
 
-public class GetAllUsersQuery : IRequest<Response<List<UserGetDto>>>
+public class GetAllUsersRequest : IRequest<Response<List<UserGetDto>>>
 {
 }
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, Response<List<UserGetDto>>>
+public class GetAllUsersRequestHandler : IRequestHandler<GetAllUsersRequest, Response<List<UserGetDto>>>
 {
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
 
-    public GetAllUsersQueryHandler(UserManager<User> userManager,
+    public GetAllUsersRequestHandler(UserManager<User> userManager,
         IMapper mapper)
     {
         _userManager = userManager;
         _mapper = mapper;
     }
 
-    public async Task<Response<List<UserGetDto>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
+    public async Task<Response<List<UserGetDto>>> Handle(GetAllUsersRequest request, CancellationToken cancellationToken)
     {
         var users = await _userManager.Users
             .ToListAsync(cancellationToken);

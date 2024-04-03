@@ -3,25 +3,23 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using tweeter.Data;
-using tweeter.Features.Users.Dtos;
 using tweeter.Shared;
 
-namespace tweeter.Features.Users.Commands;
+namespace tweeter.Features.Users;
 
-public class CreateUserCommand : IRequest<Response<UserGetDto>>
+public class CreateUserRequest : UserCreateDto, IRequest<Response<UserGetDto>>
 {
-    public UserCreateDto User { get; set; }
 }
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Response<UserGetDto>>
+public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Response<UserGetDto>>
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
-    private readonly IValidator<CreateUserCommand> _validator;
+    private readonly IValidator<CreateUserRequest> _validator;
     private readonly UserManager<User> _userManager;
 
-    public CreateUserCommandHandler(DataContext dataContext,
-        IValidator<CreateUserCommand> validator,
+    public CreateUserRequestHandler(DataContext dataContext,
+        IValidator<CreateUserRequest> validator,
         UserManager<User> userManager,
         IMapper mapper)
     {
@@ -31,9 +29,9 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Respo
         _userManager = userManager;
     }
 
-    public async Task<Response<UserGetDto>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<Response<UserGetDto>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -41,9 +39,9 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Respo
             return new Response<UserGetDto> { Errors = errors };
         }
 
-        var user = _mapper.Map<User>(command.User);
+        var user = _mapper.Map<User>(request);
 
-        var result = await _userManager.CreateAsync(user, command.User.Password);
+        var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
@@ -69,5 +67,17 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Respo
         }
 
         return _mapper.Map<UserGetDto>(returnedUser).AsResponse();
+    }
+}
+
+public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
+{
+    public CreateUserRequestValidator(IValidator<UserDto> baseValidator)
+    {
+        Include(baseValidator);
+        
+        RuleFor(x => x.Password)
+            .Must((com, prop) => com.ConfirmPassword == prop)
+            .WithMessage("Passwords do not match");
     }
 }
