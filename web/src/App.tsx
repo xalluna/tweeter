@@ -11,13 +11,12 @@ import {
 import { PrimaryNavigation } from './navigation/PrimaryNavigation';
 import { AppRoutes } from './routes/AppRoutes';
 import { useNavbarHeight } from './hooks/useNavbarHeight';
-import { dispatch } from './store/configureStore';
-import { getSignedInUser } from './services/authServices';
-import { useAsync } from 'react-use';
-import { NavLink, useLocation } from 'react-router-dom';
-import { CSSProperties, useMemo } from 'react';
 
-function App() {
+import { NavLink, useLocation } from 'react-router-dom';
+import { CSSProperties, FC, useMemo } from 'react';
+import { useAsync } from 'react-use';
+
+const App: FC = () => {
   const { navbarHeight, remainingHeight } = useNavbarHeight();
   const scrollAreaSx = useScrollAreaSx(navbarHeight);
   const location = useLocation().pathname;
@@ -31,14 +30,13 @@ function App() {
   }, [location]);
 
   const userState = useAsync(async () => {
-    await dispatch(getSignedInUser())
-
-    await new Promise((r) => setTimeout(r, 350))
+    await new Promise((r) => setTimeout(r, 350));
   }, []);
 
   const sphealingGood = () => {
     window.open('https://youtu.be/AEM_J2G2urI?si=fn1mOFyi5ZxzY-GU', '_blank');
   };
+
   return (
     <AppShell layout="alt" padding={0} header={<PrimaryNavigation />}>
       {!userState.loading ? (
@@ -56,14 +54,14 @@ function App() {
             </NavLink>
           )}
         </ScrollArea>
-      ): (
+      ) : (
         <Container h={remainingHeight}>
           <Loader sx={loaderStyle} size="150px" color="#9d65db" />
         </Container>
       )}
     </AppShell>
   );
-}
+};
 
 export default App;
 
