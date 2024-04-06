@@ -17,7 +17,7 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetAllUsers))]
     public async Task<ActionResult<Response<List<UserDto>>>> GetAllUsers()
     {
         var response = await _mediator.Send(new GetAllUsersRequest());
@@ -33,7 +33,7 @@ public class UsersController : ControllerBase
         return response.HasErrors ? NotFound(response) : Ok(response);
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(CreateUser))]
     public async Task<ActionResult<Response<UserGetDto>>> CreateUser([FromBody] CreateUserRequest request)
     {
         var response = await _mediator.Send(request);
@@ -43,7 +43,7 @@ public class UsersController : ControllerBase
             : CreatedAtRoute(nameof(GetUserById), new { response.Data.Id }, response);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:int}", Name = nameof(UpdateUser))]
     public async Task<ActionResult<Response<UserGetDto>>> UpdateUser([FromRoute] int id,
         [FromBody] UpdateUserRequest request)
     {
@@ -63,7 +63,7 @@ public class UsersController : ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpDelete]
+    [HttpDelete(Name = nameof(DeleteUser))]
     public async Task<ActionResult<Response>> DeleteUser([FromBody] DeleteUserRequest request)
     {
         var response = await _mediator.Send(request);
@@ -71,7 +71,7 @@ public class UsersController : ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpPost("sign-in")]
+    [HttpPost("sign-in", Name = nameof(SignInUser))]
     public async Task<ActionResult<Response<UserGetDto>>> SignInUser(SignInUserRequest request)
     {
         var response = await _mediator.Send(request);
@@ -79,15 +79,15 @@ public class UsersController : ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
     
-    [HttpPost("sign-out")]
-    public async Task<ActionResult<Response>> SignInUser()
+    [HttpPost("sign-out", Name = nameof(SignOutUser))]
+    public async Task<ActionResult<Response>> SignOutUser()
     {
         var response = await _mediator.Send(new SignOutUserRequest());
         
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
     
-    [HttpGet("signed-in-user")]
+    [HttpGet("signed-in-user", Name = nameof(GetSignedInUser))]
     public async Task<ActionResult<Response<List<UserDto>>>> GetSignedInUser()
     {
         var response = await _mediator.Send(new GetSignedInUserRequest());
@@ -95,7 +95,7 @@ public class UsersController : ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpPost("subscribe/{topicId}", Name = nameof(Subscribe))]
+    [HttpPost("subscribe/{topicId}, ", Name = nameof(Subscribe))]
     public async Task<ActionResult<Response<UserTopicDto>>> Subscribe([FromRoute] int topicId)
     {
         var response = await _mediator.Send(new SubscribeToTopicRequest(topicId));
@@ -104,7 +104,7 @@ public class UsersController : ControllerBase
             : CreatedAtRoute(nameof(Subscribe), new { response.Data.UserId, response.Data.TopicId }, response);
     }
 
-    [HttpPost("unsubscribe/{topicId}")]
+    [HttpPost("unsubscribe/{topicId}", Name = nameof(Unsubscribe))]
     public async Task<ActionResult<Response>> Unsubscribe([FromRoute] int topicId)
     {
         var response = await _mediator.Send(new UnsubscribeFromTopicRequest(topicId));
