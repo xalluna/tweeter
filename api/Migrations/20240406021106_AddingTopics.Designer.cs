@@ -12,8 +12,8 @@ using tweeter.Data;
 namespace tweeter.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240403043836_AddingTopicsAndUserTopics")]
-    partial class AddingTopicsAndUserTopics
+    [Migration("20240406021106_AddingTopics")]
+    partial class AddingTopics
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,15 +185,23 @@ namespace tweeter.Migrations
 
             modelBuilder.Entity("tweeter.Features.UserTopics.UserTopic", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "TopicId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserTopics", "schema");
                 });
@@ -333,7 +341,6 @@ namespace tweeter.Migrations
                     b.HasOne("tweeter.Features.Topics.Topic", "Topic")
                         .WithMany("UserTopics")
                         .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("tweeter.Features.Users.User", "User")

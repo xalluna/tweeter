@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json.Serialization;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,14 @@ namespace tweeter.Features.Topics;
 
 public class UpdateTopicRequest: IIdentifiable, IRequest<Response<TopicGetDto>>
 {
+    [JsonIgnore]
     public int Id { get; set; }
     public string Name { get; set; }
+
+    public UpdateTopicRequest(int id)
+    {
+        Id = id;
+    }
 }
 
 public class UpdateTopicRequestHandler : IRequestHandler<UpdateTopicRequest, Response<TopicGetDto>>

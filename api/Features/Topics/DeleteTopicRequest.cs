@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using tweeter.Data;
 using tweeter.Shared;
 
@@ -7,6 +8,7 @@ namespace tweeter.Features.Topics;
 
 public class DeleteTopicRequest: IRequest<Response>
 {
+    [JsonIgnore]
     public int Id { get; set; }
 
     public DeleteTopicRequest(int id)

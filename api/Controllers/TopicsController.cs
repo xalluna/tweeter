@@ -53,10 +53,10 @@ public class TopicsController: ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Response>> DeleteTopic([FromBody] DeleteTopicRequest request)
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<Response>> DeleteTopic([FromRoute] int id)
     {
-        var response = await _mediator.Send(request);
+        var response = await _mediator.Send(new DeleteTopicRequest(id));
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }

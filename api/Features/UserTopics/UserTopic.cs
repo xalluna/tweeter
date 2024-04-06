@@ -4,13 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using tweeter.Features.Topics;
 using tweeter.Features.Users;
+using tweeter.Shared.Interfaces;
 
 namespace tweeter.Features.UserTopics;
 
-public class UserTopic: UserTopicDto
+public class UserTopic: UserTopicGetDto
 {
     public User User { get; set; }
     public Topic Topic { get; set; }
+}
+
+public class UserTopicGetDto: UserTopicDto, IIdentifiable
+{
+    public int Id { get; set; }
 }
 
 public class UserTopicDto
@@ -36,6 +42,7 @@ public class UserTopicMapper : Profile
     public UserTopicMapper()
     {
         CreateMap<UserTopic, UserTopicDto>().ReverseMap();
+        CreateMap<SubscribeToTopicRequest, UserTopic>();
     }
 }
 
@@ -44,6 +51,13 @@ public class UserTopicConfiguration : IEntityTypeConfiguration<UserTopic>
     public void Configure(EntityTypeBuilder<UserTopic> builder)
     {
         builder.ToTable("UserTopics", "schema");
-        builder.HasKey(x => new {x.UserId, x.TopicId});
+
+        builder.HasOne(x => x.Topic)
+            .WithMany(x => x.UserTopics)
+            .OnDelete(DeleteBehavior.ClientCascade);
+        
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.UserTopics)
+            .OnDelete(DeleteBehavior.ClientCascade);
     }
 }

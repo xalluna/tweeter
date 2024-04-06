@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace tweeter.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingTopicsAndUserTopics : Migration
+    public partial class AddingTopics : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,12 +42,14 @@ namespace tweeter.Migrations
                 schema: "schema",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TopicId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTopics", x => new { x.UserId, x.TopicId });
+                    table.PrimaryKey("PK_UserTopics", x => x.Id);
                     table.ForeignKey(
                         name: "FK_UserTopics_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -60,8 +62,7 @@ namespace tweeter.Migrations
                         column: x => x.TopicId,
                         principalSchema: "schema",
                         principalTable: "Topics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -75,6 +76,12 @@ namespace tweeter.Migrations
                 schema: "schema",
                 table: "UserTopics",
                 column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTopics_UserId",
+                schema: "schema",
+                table: "UserTopics",
+                column: "UserId");
         }
 
         /// <inheritdoc />

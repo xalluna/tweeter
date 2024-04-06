@@ -47,6 +47,10 @@ public class TopicMapper : Profile
     {
         CreateMap<Topic, TopicGetDto>();
         CreateMap<Topic, TopicDto>().ReverseMap();
+        
+        CreateMap<CreateTopicRequest, Topic>();
+        CreateMap<UpdateTopicRequest, Topic>()
+            .ForMember(x => x.Id, opts => opts.Ignore());
     }
 }
 
@@ -57,5 +61,9 @@ public class TopicConfiguration : IEntityTypeConfiguration<Topic>
     public void Configure(EntityTypeBuilder<Topic> builder)
     {
         builder.ToTable("Topics", "schema");
+        
+        builder.HasMany(x => x.UserTopics)
+            .WithOne(x => x.Topic)
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

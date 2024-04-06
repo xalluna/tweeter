@@ -36,7 +36,7 @@ public class UnsubscribeFromTopicRequestHandler : IRequestHandler<UnsubscribeFro
 
         if (user is null)
         {
-            return Error.AsResponse("User not logged in");
+            return Error.AsResponse("User not signed in");
         }
         var userTopic = await _dataContext.Set<UserTopic>()
             .FirstOrDefaultAsync(x => x.UserId == user.Id && x.TopicId == request.TopicId);

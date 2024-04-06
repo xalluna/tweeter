@@ -40,7 +40,7 @@ public class SubscribeToTopicRequestHandler : IRequestHandler<SubscribeToTopicRe
 
         if (user is null)
         {
-            return Error.AsResponse<UserTopicDto>("User not logged in");
+            return Error.AsResponse<UserTopicDto>("User not signed in");
         }
         
         var subscriptionExists = await _dataContext.Set<UserTopic>()
@@ -52,6 +52,7 @@ public class SubscribeToTopicRequestHandler : IRequestHandler<SubscribeToTopicRe
         }
 
         var userTopic = _mapper.Map<UserTopic>(request);
+        userTopic.User = user;
 
         _dataContext.Add(userTopic);
         await _dataContext.SaveChangesAsync();
