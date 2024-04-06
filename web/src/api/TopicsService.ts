@@ -1,6 +1,7 @@
 import {
   TopicGetDtoListResponse,
   TopicGetDto,
+  PostGetDto,
   Error,
   CreateTopicRequest,
   TopicGetDtoResponse,

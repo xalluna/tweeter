@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json.Serialization;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ namespace tweeter.Features.Users;
 
 public class UpdateUserRequest : UserDto, IRequest<Response<UserGetDto>>
 {
+    [JsonIgnore]
     public int Id { get; set; }
 }
 

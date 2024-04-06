@@ -109,6 +109,9 @@ export class PagedResultDto<T = any> implements IPagedResult<T> {
 
 export class CreatePostRequest {
   /**  */
+  'topicId'?: number;
+
+  /**  */
   'content'?: string;
 
   constructor(data: CreatePostRequest = {}) {
@@ -172,6 +175,9 @@ export class Error {
 
 export class PostDto {
   /**  */
+  'topicId'?: number;
+
+  /**  */
   'content'?: string;
 
   constructor(data: PostDto = {}) {
@@ -195,6 +201,9 @@ export class PostDtoListResponse {
 }
 
 export class PostGetDto {
+  /**  */
+  'topicId'?: number;
+
   /**  */
   'content'?: string;
 
@@ -269,6 +278,9 @@ export class TopicGetDto {
 
   /**  */
   'id'?: number;
+
+  /**  */
+  'posts'?: PostGetDto[];
 
   constructor(data: TopicGetDto = {}) {
     Object.assign(this, data);
@@ -350,9 +362,6 @@ export class UpdateUserRequest {
 
   /**  */
   'phoneNumber'?: string;
-
-  /**  */
-  'id'?: number;
 
   constructor(data: UpdateUserRequest = {}) {
     Object.assign(this, data);

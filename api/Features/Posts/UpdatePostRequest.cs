@@ -8,9 +8,10 @@ using tweeter.Shared;
 
 namespace tweeter.Features.Posts;
 
-public class UpdatePostRequest : PostDto, IRequest<Response<PostGetDto>>
+public class UpdatePostRequest : IRequest<Response<PostGetDto>>
 {
     [JsonIgnore] public int Id { get; set; }
+    public string Content { get; set; }
 }
 
 public class UpdatePostRequestHandler : IRequestHandler<UpdatePostRequest, Response<PostGetDto>>
@@ -46,8 +47,8 @@ public class UpdatePostRequestHandler : IRequestHandler<UpdatePostRequest, Respo
             return Error.AsResponse<PostGetDto>("Post not found", "id");
         }
 
-        var requestPost = _mapper.Map<Post>(request);
-        _mapper.Map(requestPost, post);
+        post.Content = request.Content;
+        
         await _dataContext.SaveChangesAsync(cancellationToken);
         return _mapper.Map<PostGetDto>(post).AsResponse();
     }
@@ -55,8 +56,9 @@ public class UpdatePostRequestHandler : IRequestHandler<UpdatePostRequest, Respo
 
 public class UpdatePostRequestValidator : AbstractValidator<UpdatePostRequest>
 {
-    public UpdatePostRequestValidator(IValidator<PostDto> baseValidator)
+    public UpdatePostRequestValidator()
     {
-        Include(baseValidator);
+        RuleFor(x => x.Content)
+            .NotEmpty();
     }
 }
