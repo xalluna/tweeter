@@ -155,54 +155,6 @@ namespace tweeter.Migrations
                     b.ToTable("AspNetUserTokens", "identity");
                 });
 
-            modelBuilder.Entity("tweeter.Features.Topics.Topic", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("Topics", "schema");
-                });
-
-            modelBuilder.Entity("tweeter.Features.UserTopics.UserTopic", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TopicId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTopics", "schema");
-                });
-
             modelBuilder.Entity("tweeter.Features.Users.User", b =>
                 {
                     b.Property<int>("Id")
@@ -322,40 +274,6 @@ namespace tweeter.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("tweeter.Features.Topics.Topic", b =>
-                {
-                    b.HasOne("tweeter.Features.Users.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("tweeter.Features.UserTopics.UserTopic", b =>
-                {
-                    b.HasOne("tweeter.Features.Topics.Topic", "Topic")
-                        .WithMany("UserTopics")
-                        .HasForeignKey("TopicId")
-                        .IsRequired();
-
-                    b.HasOne("tweeter.Features.Users.User", "User")
-                        .WithMany("UserTopics")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Topic");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("tweeter.Features.Topics.Topic", b =>
-                {
-                    b.Navigation("UserTopics");
-                });
-
             modelBuilder.Entity("tweeter.Features.Users.User", b =>
                 {
                     b.Navigation("Claims");
@@ -365,8 +283,6 @@ namespace tweeter.Migrations
                     b.Navigation("Roles");
 
                     b.Navigation("Tokens");
-
-                    b.Navigation("UserTopics");
                 });
 #pragma warning restore 612, 618
         }
