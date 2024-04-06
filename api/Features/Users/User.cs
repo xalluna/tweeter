@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using tweeter.Features.UserTopics;
 using tweeter.Shared.Interfaces;
 
 namespace tweeter.Features.Users;
@@ -14,6 +15,8 @@ public class User : IdentityUser<int>, IIdentifiable
     public List<IdentityUserLogin<int>> Logins { get; set; }
     public List<IdentityUserToken<int>> Tokens { get; set; }
     public List<IdentityUserRole<int>> Roles { get; set; }
+    
+    public List<UserTopic> UserTopics { get; set; }
 }
 
 public class UserGetDto : UserDto

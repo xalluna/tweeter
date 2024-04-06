@@ -2,7 +2,9 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using tweeter.Data;
+using tweeter.Features.UserTopics;
 using tweeter.Shared;
 
 namespace tweeter.Features.Users;
@@ -57,6 +59,15 @@ public class DeleteUserRequestHandler : IRequestHandler<DeleteUserRequest, Respo
         {
             return Error.AsResponse("Unable to delete account.", "user");
         }
+
+        await _dataContext.Set<UserTopic>()
+            .Where(x => x.UserId == user.Id)
+            .Select(x => x.Topic)
+            .ExecuteDeleteAsync();
+        
+        await _dataContext.Set<UserTopic>()
+            .Where(x => x.UserId == user.Id)
+            .ExecuteDeleteAsync();
 
         var result = await _userManager.DeleteAsync(user);
 
