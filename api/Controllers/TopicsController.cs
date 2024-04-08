@@ -16,7 +16,7 @@ public class TopicsController: ControllerBase
         _mediator = mediator;
     }
     
-    [HttpGet]
+    [HttpGet(Name = nameof(GetAllTopic))]
     public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllTopic()
     {
         var response = await _mediator.Send(new GetAllTopicsRequest());
@@ -32,7 +32,7 @@ public class TopicsController: ControllerBase
         return response.HasErrors ? NotFound(response) : Ok(response);
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(CreateTopic))]
     public async Task<ActionResult<Response<TopicGetDto>>> CreateTopic([FromBody] CreateTopicRequest request)
     {
         var response = await _mediator.Send(request);
@@ -42,7 +42,7 @@ public class TopicsController: ControllerBase
             : CreatedAtRoute(nameof(GetTopicById), new { response.Data.Id }, response);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:int}", Name = nameof(UpdateTopic))]
     public async Task<ActionResult<Response<TopicGetDto>>> UpdateTopic([FromRoute] int id,
         [FromBody] UpdateTopicRequest request)
     {
@@ -53,7 +53,7 @@ public class TopicsController: ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:int}",Name = nameof(DeleteTopic))]
     public async Task<ActionResult<Response>> DeleteTopic([FromRoute] int id)
     {
         var response = await _mediator.Send(new DeleteTopicRequest(id));
@@ -61,7 +61,7 @@ public class TopicsController: ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
     
-    [HttpGet("users/{userId}")]
+    [HttpGet("users/{userId}", Name = nameof(GetAllTopicsByUserId))]
     public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllTopicsByUserId([FromRoute] int userId)
     {
         var response = await _mediator.Send(new GetAllTopicsByUserIdRequest(userId));
