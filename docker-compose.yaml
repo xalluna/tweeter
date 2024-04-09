@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "7192:80"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
+
+  db:
+    image: mcr.microsoft.com/mssql/server:latest
+    restart: always
+    environment:
+      SA_PASSWORD: "1q1q1q1q!Q!Q!Q!Q"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    # volumes:
+    #   - my-datavolume:/var/lib/mysql
+  # volumes:
+  #   my-datavolume:
