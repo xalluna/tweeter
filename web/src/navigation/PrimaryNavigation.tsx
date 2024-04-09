@@ -81,12 +81,8 @@ export function PrimaryNavigation(): React.ReactElement {
             </Menu.Target>
 
             <Menu.Dropdown>
-              <Menu.Item icon={<IconLogin size={14} />} onClick={null}>
-                Login
-              </Menu.Item>
-              <Menu.Item icon={<IconRegistered size={14} />} onClick={null}>
-                Register
-              </Menu.Item>
+              <Menu.Item icon={<IconLogin size={14} />}>Login</Menu.Item>
+              <Menu.Item icon={<IconRegistered size={14} />}>Register</Menu.Item>
             </Menu.Dropdown>
 
             <Menu.Dropdown>

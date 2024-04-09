@@ -1,15 +1,6 @@
 version: "3.8"
 
 services:
-  api:
-    build: ./api
-    ports:
-      - "7192:80"
-    depends_on:
-      - db
-    environment:
-      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
-
   db:
     image: mcr.microsoft.com/mssql/server:latest
     restart: always
@@ -22,3 +13,18 @@ services:
     #   - my-datavolume:/var/lib/mysql
   # volumes:
   #   my-datavolume:
+
+  frontend:
+    build: ./web
+    ports:
+      - "5187:80"
+    # command: sh -c "npm install && npm run dev"
+
+  api:
+    build: ./api
+    ports:
+      - "7192:80"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
