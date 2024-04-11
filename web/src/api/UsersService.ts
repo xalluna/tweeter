@@ -215,7 +215,7 @@ export class UsersService {
     options: IRequestOptions = {}
   ): Promise<UserTopicDtoResponse> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/users/subscribe/{topicId}, ';
+      let url = basePath + '/api/users/subscribe/{topicId}';
       url = url.replace('{topicId}', params['topicId'] + '');
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);

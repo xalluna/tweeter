@@ -27,7 +27,7 @@ public class GetAllTopicsRequestHandler: IRequestHandler<GetAllTopicsRequest, Re
     {
         var topics = await _dataContext.Set<Topic>()
             .ProjectTo<TopicGetDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return topics.AsResponse();
     }

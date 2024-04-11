@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using tweeter.Features.Posts;
 using tweeter.Features.Users;
 using tweeter.Features.UserTopics;
 using tweeter.Shared.Interfaces;
@@ -12,6 +13,7 @@ public class Topic: TopicGetDto
 {
     public User CreatedByUser { get; set; }
     public List<UserTopic> UserTopics { get; set; }
+    public List<Post> Posts { get; set; }
 }
 
 public class TopicGetDto: TopicDto, IIdentifiable
@@ -24,6 +26,7 @@ public class TopicDto
     public string Name { get; set; }
     public int CreatedByUserId { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
+    public List<PostGetDto> Posts { get; set; }
 }
 
 public class TopicValidator : AbstractValidator<TopicDto>

@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using tweeter.Features.Topics;
 using tweeter.Features.Users;
 using tweeter.Shared.Interfaces;
 
@@ -10,6 +11,7 @@ namespace tweeter.Features.Posts;
 public class Post: PostGetDto, IIdentifiable
 {
     public User User { get; set; }
+    public Topic Topic { get; set; }
 }
 
 public class PostDetailDto: PostGetDto
@@ -26,6 +28,7 @@ public class PostGetDto: PostDto
 
 public class PostDto
 {
+    public int TopicId { get; set; }
     public string Content { get; set; }
 }
 
@@ -48,6 +51,10 @@ public class PostValidator : AbstractValidator<PostDto>
         RuleFor(x => x.Content)
             .MaximumLength(300)
             .NotEmpty();
+        
+        RuleFor(x => x.TopicId)
+            .GreaterThan(0)
+            .NotEmpty();
     }
 }
 
@@ -61,5 +68,9 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .WithMany()
             .HasForeignKey(p => p.UserId)
             .IsRequired();
+
+        builder.HasOne(p => p.Topic)
+            .WithMany(x => x.Posts)
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

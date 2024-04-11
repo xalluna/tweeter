@@ -1,6 +1,7 @@
 import {
   TopicGetDtoListResponse,
   TopicGetDto,
+  PostGetDto,
   Error,
   CreateTopicRequest,
   TopicGetDtoResponse,
@@ -29,7 +30,7 @@ export class TopicsService {
   /**
    *
    */
-  static getAllTopic(options: IRequestOptions = {}): Promise<TopicGetDtoListResponse> {
+  static getAllTopics(options: IRequestOptions = {}): Promise<TopicGetDtoListResponse> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/topics';
 
