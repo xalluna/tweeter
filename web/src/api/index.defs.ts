@@ -277,10 +277,10 @@ export class TopicGetDto {
   'createdDate'?: Date;
 
   /**  */
-  'id'?: number;
+  'posts'?: PostGetDto[];
 
   /**  */
-  'posts'?: PostGetDto[];
+  'id'?: number;
 
   constructor(data: TopicGetDto = {}) {
     Object.assign(this, data);
