@@ -5,7 +5,6 @@ services:
     rootDir: tweeter
     dockerCommand: ./api
     plan: free
-    maxShutdownDelaySeconds: 120
     envVars:
       - key: ConnectionStrings
         value: Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
@@ -20,11 +19,6 @@ services:
     name: tweeter-db
     plan: free
     env: docker
-    autoDeploy: false
-    disk:
-      name: mysql
-      mountPath: /var/lib/mysql
-      sizeGB: 10
     envVars:
       - fromGroup: mysql
 
