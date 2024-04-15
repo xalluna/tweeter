@@ -11,6 +11,7 @@ services:
 
   - type: web
     runtime: docker
+    plan: free
     name: tweeter-web
     rootDir: web
     dockerCommand: ./web
