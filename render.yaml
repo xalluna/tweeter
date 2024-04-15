@@ -7,7 +7,8 @@ services:
     plan: free
     maxShutdownDelaySeconds: 120
     envVars:
-      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
+      - key: ConnectionStrings
+        value: Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
 
   - type: web
     runtime: docker
