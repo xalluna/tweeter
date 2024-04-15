@@ -2,26 +2,24 @@ version: "3.8"
 
 services:
   db:
-    image: mcr.microsoft.com/mssql/server:latest
+    build: .
+    image: brandonbarrstudentdev/tweeter-db:latest
     restart: always
     environment:
       SA_PASSWORD: "1q1q1q1q!Q!Q!Q!Q"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
-    # volumes:
-    #   - my-datavolume:/var/lib/mysql
-  # volumes:
-  #   my-datavolume:
 
-  frontend:
+  web:
     build: ./web
+    image: brandonbarrstudentdev/tweeter-web:latest
     ports:
       - "5187:80"
-    # command: sh -c "npm install && npm run dev"
 
   api:
     build: ./api
+    image: brandonbarrstudentdev/tweeter-api:latest
     ports:
       - "7192:80"
     depends_on:

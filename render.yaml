@@ -1,0 +1,36 @@
+services:
+  - type: web
+    runtime: docker
+    name: tweeter-api
+    rootDir: tweeter
+    dockerCommand: ./api
+    plan: free
+    maxShutdownDelaySeconds: 120
+    envVars:
+      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
+
+  - type: web
+    runtime: docker
+    name: tweeter-web
+    rootDir: web
+    dockerCommand: ./web
+
+  - type: pserv
+    name: tweeter-db
+    plan: free
+    env: docker
+    autoDeploy: false
+    disk:
+      name: mysql
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - fromGroup: mysql
+
+envVarGroups:
+  - name: mysql
+    envVars:
+      - key: SA_PASSWORD
+        value: "1q1q1q1q!Q!Q!Q!Q"
+      - key: ACCEPT_EULA
+        value: "Y"
