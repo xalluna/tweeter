@@ -2,7 +2,6 @@ services:
   - type: web
     runtime: docker
     name: tweeter-api
-    rootDir: tweeter
     dockerCommand: ./api
     plan: free
     envVars:
@@ -13,13 +12,13 @@ services:
     runtime: docker
     plan: free
     name: tweeter-web
-    rootDir: web
     dockerCommand: ./web
 
   - type: pserv
     name: tweeter-db
-    plan: free
     env: docker
+    plan: free
+    dockerCommand: ./db
     envVars:
       - fromGroup: mysql
 
