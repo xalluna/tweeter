@@ -17,7 +17,7 @@ public class TopicsController: ControllerBase
     }
     
     [HttpGet(Name = nameof(GetAllTopics))]
-    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllTopics()
+    public async Task<ActionResult<Response<List<TopicDetailDto>>>> GetAllTopics()
     {
         var response = await _mediator.Send(new GetAllTopicsRequest());
 

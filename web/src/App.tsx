@@ -64,7 +64,7 @@ export default App;
 function footerSx(theme: MantineTheme): CSSObject {
   return {
     height: '3.5rem',
-    background: theme.colors.secondaryBlueColors[3],
+    background: theme.colors.primaryColors[1],
     position: 'sticky',
     bottom: 0,
     left: 0,
@@ -78,6 +78,7 @@ function useContainerSx(theme: MantineTheme): CSSObject {
   return {
     boxShadow: '0px 3px 8px black',
     position: 'relative',
+    padding: 10,
     minHeight: remainingHeight,
     backgroundColor: theme.colors.backgroundColor[0],
   };

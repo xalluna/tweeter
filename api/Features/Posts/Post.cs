@@ -16,6 +16,7 @@ public class Post: PostGetDto, IIdentifiable
 
 public class PostDetailDto: PostGetDto
 {
+    public string CreatedByUserName { get; set; }
 }
 
 public class PostGetDto: PostDto
@@ -38,7 +39,8 @@ public class PostMapper : Profile
     {
         CreateMap<Post, PostGetDto>();
         CreateMap<Post, PostDto>().ReverseMap();
-        CreateMap<Post, PostDetailDto>();
+        CreateMap<Post, PostDetailDto>()
+            .ForMember(dest => dest.CreatedByUserName, opts => opts.MapFrom(src => src.User.UserName));
         
         CreateMap<Post, UpdatePostRequest>().ReverseMap();
     }

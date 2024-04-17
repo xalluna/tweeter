@@ -1,12 +1,14 @@
 import {
-  TopicGetDtoListResponse,
-  TopicGetDto,
-  PostGetDto,
+  TopicDetailDtoListResponse,
+  TopicDetailDto,
+  PostDetailDto,
   Error,
   CreateTopicRequest,
   TopicGetDtoResponse,
+  TopicGetDto,
   UpdateTopicRequest,
   Response,
+  TopicGetDtoListResponse,
   IList,
   List,
   IListResult,
@@ -30,7 +32,7 @@ export class TopicsService {
   /**
    *
    */
-  static getAllTopics(options: IRequestOptions = {}): Promise<TopicGetDtoListResponse> {
+  static getAllTopics(options: IRequestOptions = {}): Promise<TopicDetailDtoListResponse> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/topics';
 
