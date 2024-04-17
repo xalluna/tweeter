@@ -9,11 +9,7 @@ export type NavButtonProps = {
   sx?: (theme: MantineTheme) => CSSObject;
 };
 
-export function NavButton({
-  route,
-  children,
-  sx,
-}: NavButtonProps): React.ReactElement {
+export function NavButton({ route, children, sx }: NavButtonProps): React.ReactElement {
   const navigate = useNavigate();
   const navButtonSx = useNavButtonSx(route);
 
@@ -35,17 +31,16 @@ function useNavButtonSx(route: string) {
 
   return (theme: MantineTheme): CSSObject => {
     return {
-      padding: '10px 20px',
+      padding: '10px 15px',
       borderRadius: '4px',
       transition: 'ease-in .2s',
-      color: 'white',
-      backgroundColor: `${
-        isActivePath
-          ? theme.colors.secondaryBlueColors[3]
-          : theme.colors.secondaryBlueColors[1]
-      }`,
+      fontWeight: 600,
+      fontSize: 18,
+      color: `${isActivePath ? theme.colors.primaryColors[4] : 'white'}`,
+      backgroundColor: 'transparent',
       ':hover': {
-        backgroundColor: theme.colors.secondaryBlueColors[2],
+        color: 'white',
+        backgroundColor: theme.colors.primaryColors[0],
       },
     };
   };

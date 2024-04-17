@@ -16,6 +16,11 @@ public class Topic: TopicGetDto
     public List<Post> Posts { get; set; }
 }
 
+public class TopicDetailDto: TopicGetDto
+{
+    public string CreatedByUserName { get; set; }
+}
+
 public class TopicGetDto: TopicDto, IIdentifiable
 {
     public int Id { get; set; }
@@ -26,7 +31,7 @@ public class TopicDto
     public string Name { get; set; }
     public int CreatedByUserId { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
-    public List<PostGetDto> Posts { get; set; }
+    public List<PostDetailDto> Posts { get; set; }
 }
 
 public class TopicValidator : AbstractValidator<TopicDto>
@@ -50,6 +55,8 @@ public class TopicMapper : Profile
     {
         CreateMap<Topic, TopicGetDto>();
         CreateMap<Topic, TopicDto>().ReverseMap();
+        CreateMap<Topic, TopicDetailDto>()
+            .ForMember(dest => dest.CreatedByUserName, opts => opts.MapFrom(src => src.CreatedByUser.UserName));
         
         CreateMap<CreateTopicRequest, Topic>();
         CreateMap<UpdateTopicRequest, Topic>()

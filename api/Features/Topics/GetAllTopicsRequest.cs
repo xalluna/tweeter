@@ -7,11 +7,11 @@ using tweeter.Shared;
 
 namespace tweeter.Features.Topics;
 
-public class GetAllTopicsRequest: IRequest<Response<List<TopicGetDto>>>
+public class GetAllTopicsRequest: IRequest<Response<List<TopicDetailDto>>>
 {
 }
 
-public class GetAllTopicsRequestHandler: IRequestHandler<GetAllTopicsRequest, Response<List<TopicGetDto>>> {
+public class GetAllTopicsRequestHandler: IRequestHandler<GetAllTopicsRequest, Response<List<TopicDetailDto>>> {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
 
@@ -23,10 +23,10 @@ public class GetAllTopicsRequestHandler: IRequestHandler<GetAllTopicsRequest, Re
         _mapper = mapper;
     }
     
-    public async Task<Response<List<TopicGetDto>>> Handle(GetAllTopicsRequest request, CancellationToken cancellationToken)
+    public async Task<Response<List<TopicDetailDto>>> Handle(GetAllTopicsRequest request, CancellationToken cancellationToken)
     {
         var topics = await _dataContext.Set<Topic>()
-            .ProjectTo<TopicGetDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<TopicDetailDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return topics.AsResponse();

@@ -173,6 +173,33 @@ export class Error {
   }
 }
 
+export class PostDetailDto {
+  /**  */
+  'topicId'?: number;
+
+  /**  */
+  'content'?: string;
+
+  /**  */
+  'id'?: number;
+
+  /**  */
+  'userId'?: number;
+
+  /**  */
+  'createdDate'?: Date;
+
+  /**  */
+  'isDeleted'?: boolean;
+
+  /**  */
+  'createdByUserName'?: string;
+
+  constructor(data: PostDetailDto = {}) {
+    Object.assign(this, data);
+  }
+}
+
 export class PostDto {
   /**  */
   'topicId'?: number;
@@ -266,6 +293,45 @@ export class SignInUserRequest {
   }
 }
 
+export class TopicDetailDto {
+  /**  */
+  'name'?: string;
+
+  /**  */
+  'createdByUserId'?: number;
+
+  /**  */
+  'createdDate'?: Date;
+
+  /**  */
+  'posts'?: PostDetailDto[];
+
+  /**  */
+  'id'?: number;
+
+  /**  */
+  'createdByUserName'?: string;
+
+  constructor(data: TopicDetailDto = {}) {
+    Object.assign(this, data);
+  }
+}
+
+export class TopicDetailDtoListResponse {
+  /**  */
+  'data'?: TopicDetailDto[];
+
+  /**  */
+  'errors'?: Error[];
+
+  /**  */
+  'hasErrors'?: boolean;
+
+  constructor(data: TopicDetailDtoListResponse = {}) {
+    Object.assign(this, data);
+  }
+}
+
 export class TopicGetDto {
   /**  */
   'name'?: string;
@@ -277,7 +343,7 @@ export class TopicGetDto {
   'createdDate'?: Date;
 
   /**  */
-  'posts'?: PostGetDto[];
+  'posts'?: PostDetailDto[];
 
   /**  */
   'id'?: number;
