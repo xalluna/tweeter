@@ -58,7 +58,7 @@ const Topic: FC<{ topic: TopicDetailDto }> = ({ topic }) => {
         </div>
       </Group>
 
-      {topic.posts ? (
+      {topic.posts && topic.posts?.length > 0 ? (
         <Stack pl={50}>
           {topic.posts.map((post, index) => {
             return <Post post={post} key={index} />;

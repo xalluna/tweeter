@@ -16,9 +16,9 @@ export function formatDate(date: Date) {
 
   if (dateGreaterThanOneHour) {
     const hours = Math.floor(milisecondsSinceDate / 3600000);
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    return `${hours} hour${hours != 1 ? 's' : ''} ago`;
   }
 
   const minutes = Math.floor(milisecondsSinceDate / 60000);
-  return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  return `${minutes} minute${minutes != 1 ? 's' : ''} ago`;
 }
