@@ -19,6 +19,11 @@ public class User : IdentityUser<int>, IIdentifiable
     public List<UserTopic> UserTopics { get; set; }
 }
 
+public class UserDetailDto : UserGetDto
+{
+    public List<int> TopicIds { get; set; }
+}
+
 public class UserGetDto : UserDto
 {
     public int Id { get; set; }
@@ -76,6 +81,7 @@ public class UserMapper : Profile
     {
         CreateMap<User, UserGetDto>();
         CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserDetailDto>();
     }
 }
 
