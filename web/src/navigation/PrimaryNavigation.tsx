@@ -1,14 +1,19 @@
 import { ActionIcon, CSSObject, Flex, MantineTheme, Menu, Navbar, Image } from '@mantine/core';
-import { IconLogin, IconLogout, IconRegistered, IconSettings, IconUser } from '@tabler/icons-react';
-import React from 'react';
+import { IconLogin, IconLogout, IconRegistered, IconUser } from '@tabler/icons-react';
+import React, { FC, useState } from 'react';
 import { NavButton } from './NavButton';
 import { useNavbarHeight } from '../hooks/useNavbarHeight';
-import { useNavigate } from 'react-router-dom';
 import { routes } from '../routes';
+import { success } from '../services/helpers/notification';
+import { useUserContext } from '../users/useUserContext';
+import { SignInModal } from '../users/SignInModal';
+import { RegisterModal } from '../users/RegisterModal';
 
 export function PrimaryNavigation(): React.ReactElement {
-  const navigate = useNavigate();
   const { navbarHeight } = useNavbarHeight();
+  const [open, setOpen] = useState(false);
+  const [loginIsOpen, setLoginOpen] = useState(false);
+  const { user, setUser } = useUserContext();
 
   return (
     <>
@@ -28,30 +33,39 @@ export function PrimaryNavigation(): React.ReactElement {
               </ActionIcon>
             </Menu.Target>
 
-            <Menu.Dropdown>
-              <Menu.Item icon={<IconLogin size={14} />} onClick={null}>
-                Login
-              </Menu.Item>
-              <Menu.Item icon={<IconRegistered size={14} />} onClick={null}>
-                Register
-              </Menu.Item>
-            </Menu.Dropdown>
-
-            <Menu.Dropdown>
-              <Menu.Item
-                icon={<IconSettings size={14} />}
-                onClick={() => navigate(routes.settings)}
-              >
-                Settings
-              </Menu.Item>
-              <Menu.Item icon={<IconLogout size={14} />}>Logout</Menu.Item>
-            </Menu.Dropdown>
+            {!user ? (
+              <Menu.Dropdown>
+                <Menu.Item icon={<IconLogin size={14} />} onClick={() => setLoginOpen(true)}>
+                  Sign In
+                </Menu.Item>
+                <Menu.Item icon={<IconRegistered size={14} />} onClick={() => {}}>
+                  Register
+                </Menu.Item>
+              </Menu.Dropdown>
+            ) : (
+              <Menu.Dropdown>
+                <SignOutMenuItem
+                  onSignOut={() => {
+                    setUser(undefined);
+                    success('Signed out');
+                  }}
+                />
+              </Menu.Dropdown>
+            )}
           </Menu>
         </Flex>
       </Navbar>
+      <RegisterModal open={open} close={() => setOpen(false)} />
+      <SignInModal open={loginIsOpen} close={() => setLoginOpen(false)} />
     </>
   );
 }
+
+const SignOutMenuItem: FC<{ onSignOut: () => void }> = ({ onSignOut }) => (
+  <Menu.Item icon={<IconLogout size={14} />} onClick={onSignOut}>
+    Sign Out
+  </Menu.Item>
+);
 
 function navbarSx(theme: MantineTheme): CSSObject {
   return {

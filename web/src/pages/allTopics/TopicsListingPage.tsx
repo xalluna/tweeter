@@ -1,175 +1,50 @@
-import { FC, useState } from 'react';
-import { useAsync } from 'react-use';
-import {
-  Avatar,
-  Container,
-  Group,
-  Paper,
-  Stack,
-  createStyles,
-  rem,
-  useMantineTheme,
-  Text,
-  TypographyStylesProvider,
-  Divider,
-  Button,
-} from '@mantine/core';
+import { FC, useEffect } from 'react';
+import { useAsyncFn } from 'react-use';
+import { Container, Stack, createStyles, Text, Divider } from '@mantine/core';
 import { TopicsService } from '../../api/TopicsService';
-import { formatDate } from '../../helpers/dateFormatter';
-import { PostDetailDto, TopicDetailDto } from '../../api/index.defs';
-import { IconStar, IconStarFilled } from '@tabler/icons-react';
-import { success } from '../../services/helpers/notification';
+import { error } from '../../services/helpers/notification';
+import { useTopicsContext } from '../../topics/useTopicsContext';
+import { Topic } from '../../topics/Topic';
 
 export const TopicsListingPage: FC = () => {
-  const topics = useAsync(async () => {
+  const { classes } = useStyles();
+  const { topics, setTopics } = useTopicsContext();
+
+  const [, fetchTopics] = useAsyncFn(async () => {
     const response = await TopicsService.getAllTopics();
+    if (response.hasErrors) {
+      error(response.errors?.[0].message);
+    }
+
+    setTopics(response.data);
     return response.data;
   });
-  const { classes } = useStyles();
+
+  useEffect(() => {
+    fetchTopics();
+  }, [fetchTopics]);
 
   return (
-    <Container className={classes.tweetContainer}>
+    <Container className={classes.pageContainer}>
       <h1>Latest Tweets</h1>
-      <Stack>
-        {topics.value && topics.value.map((topic, index) => <Topic topic={topic} key={index} />)}
+      <Stack spacing="lg">
+        {topics && topics.map((topic, index) => <Topic topic={topic} key={index} />)}
+        <Divider />
+        <Text c="dimmed" className={classes.theEnd}>
+          - The End -
+        </Text>
       </Stack>
     </Container>
   );
 };
 
-const Topic: FC<{ topic: TopicDetailDto }> = ({ topic }) => {
-  const { colors } = useMantineTheme();
-  const { classes } = useStyles();
-  const [isSubscribed, setSubscribed] = useState(false);
-
-  const handleSubscription = () => {
-    success(isSubscribed ? 'Unsubscrived' : 'Subscribed');
-    setSubscribed(!isSubscribed);
-  };
-
-  return (
-    <Paper
-      bg={colors.secondaryBackgroundColors[2]}
-      withBorder
-      radius="md"
-      className={classes.comment}
-    >
-      <Group align="flex-start" className={classes.topicGroup}>
-        <Group align="flex-start">
-          <TweetAvatar createdByUserName={topic.createdByUserName?.charAt(0)} />
-          <div>
-            <TweetCreatedInfo
-              createdByUserName={topic.createdByUserName}
-              createdDate={topic.createdDate}
-            />
-            <TypographyStylesProvider className={classes.topicBody}>
-              <div className={classes.content}>{topic.name}</div>
-            </TypographyStylesProvider>
-          </div>
-        </Group>
-
-        <Button p={5} onClick={handleSubscription}>
-          {isSubscribed ? <IconStarFilled /> : <IconStar />}
-        </Button>
-      </Group>
-
-      {topic.posts && topic.posts?.length > 0 ? (
-        <Stack pl={50}>
-          {topic.posts.map((post, index) => {
-            return <Post post={post} key={index} />;
-          })}
-        </Stack>
-      ) : (
-        <>
-          <Divider />
-          <Text c="dimmed" className={classes.noComments}>
-            - No Comments -
-          </Text>
-        </>
-      )}
-    </Paper>
-  );
-};
-
-const Post: FC<{ post: PostDetailDto }> = ({ post }) => {
-  const { colors } = useMantineTheme();
-  const { classes } = useStyles();
-
-  return (
-    <Paper
-      bg={colors.secondaryBackgroundColors[1]}
-      withBorder
-      radius="md"
-      className={classes.comment}
-    >
-      <Group>
-        <TweetAvatar createdByUserName={post.createdByUserName?.charAt(0)} />
-        <TweetCreatedInfo
-          createdByUserName={post.createdByUserName}
-          createdDate={post.createdDate}
-        />
-      </Group>
-
-      <TypographyStylesProvider className={classes.body}>
-        <div className={classes.content}>{post.content}</div>
-      </TypographyStylesProvider>
-    </Paper>
-  );
-};
-
-const TweetAvatar: FC<{ createdByUserName?: string }> = ({ createdByUserName }) => (
-  <Avatar color="blue" radius="xl" variant="filled">
-    {createdByUserName?.charAt(0)}
-  </Avatar>
-);
-
-const TweetCreatedInfo: FC<{
-  createdByUserName?: string;
-  createdDate?: Date;
-}> = ({ createdByUserName, createdDate }) => {
-  return (
-    <div>
-      <Text fz="sm">{createdByUserName}</Text>
-      <Text fz="xs" c="dimmed">
-        {createdDate && formatDate(createdDate)}
-      </Text>
-    </div>
-  );
-};
-
 const useStyles = createStyles(() => ({
-  tweetContainer: {
+  pageContainer: {
     color: '#e6e6e6',
+    paddingBottom: 50,
   },
 
-  comment: {
-    padding: '20px',
-    color: '#e6e6e6',
-  },
-
-  topicGroup: {
-    color: '#e6e6e6',
-    justifyContent: 'space-between',
-  },
-
-  topicBody: {
-    color: '#e6e6e6',
-    paddingBottom: 25,
-    fontSize: 24,
-  },
-
-  body: {
-    color: '#e6e6e6',
-    paddingLeft: rem('54px'),
-    padding: 10,
-  },
-
-  content: {
-    color: '#e6e6e6',
-    '& > p:last-child': { marginBottom: 0 },
-  },
-
-  noComments: {
+  theEnd: {
     display: 'flex',
     justifyContent: 'center',
     margin: 'auto',

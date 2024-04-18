@@ -109,6 +109,9 @@ export class PagedResultDto<T = any> implements IPagedResult<T> {
 
 export class CreatePostRequest {
   /**  */
+  'userId'?: number;
+
+  /**  */
   'topicId'?: number;
 
   /**  */
@@ -175,6 +178,9 @@ export class Error {
 
 export class PostDetailDto {
   /**  */
+  'userId'?: number;
+
+  /**  */
   'topicId'?: number;
 
   /**  */
@@ -182,9 +188,6 @@ export class PostDetailDto {
 
   /**  */
   'id'?: number;
-
-  /**  */
-  'userId'?: number;
 
   /**  */
   'createdDate'?: Date;
@@ -200,7 +203,25 @@ export class PostDetailDto {
   }
 }
 
+export class PostDetailDtoResponse {
+  /**  */
+  'data'?: PostDetailDto;
+
+  /**  */
+  'errors'?: Error[];
+
+  /**  */
+  'hasErrors'?: boolean;
+
+  constructor(data: PostDetailDtoResponse = {}) {
+    Object.assign(this, data);
+  }
+}
+
 export class PostDto {
+  /**  */
+  'userId'?: number;
+
   /**  */
   'topicId'?: number;
 
@@ -229,6 +250,9 @@ export class PostDtoListResponse {
 
 export class PostGetDto {
   /**  */
+  'userId'?: number;
+
+  /**  */
   'topicId'?: number;
 
   /**  */
@@ -236,9 +260,6 @@ export class PostGetDto {
 
   /**  */
   'id'?: number;
-
-  /**  */
-  'userId'?: number;
 
   /**  */
   'createdDate'?: Date;
@@ -430,6 +451,42 @@ export class UpdateUserRequest {
   'phoneNumber'?: string;
 
   constructor(data: UpdateUserRequest = {}) {
+    Object.assign(this, data);
+  }
+}
+
+export class UserDetailDto {
+  /**  */
+  'userName'?: string;
+
+  /**  */
+  'email'?: string;
+
+  /**  */
+  'phoneNumber'?: string;
+
+  /**  */
+  'id'?: number;
+
+  /**  */
+  'topicIds'?: number[];
+
+  constructor(data: UserDetailDto = {}) {
+    Object.assign(this, data);
+  }
+}
+
+export class UserDetailDtoResponse {
+  /**  */
+  'data'?: UserDetailDto;
+
+  /**  */
+  'errors'?: Error[];
+
+  /**  */
+  'hasErrors'?: boolean;
+
+  constructor(data: UserDetailDtoResponse = {}) {
     Object.assign(this, data);
   }
 }
