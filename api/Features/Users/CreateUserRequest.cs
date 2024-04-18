@@ -40,7 +40,6 @@ public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Respo
         }
 
         var user = _mapper.Map<User>(request);
-
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
@@ -48,8 +47,6 @@ public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Respo
             var errors = _mapper.Map<List<Error>>(result.Errors);
             return new Response<UserGetDto>{Errors = errors};
         }
-
-        result = await _userManager.AddToRoleAsync(user, "Basic");
 
         if (!result.Succeeded)
         {

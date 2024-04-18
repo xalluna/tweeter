@@ -1,33 +1,18 @@
-import {
-  ActionIcon,
-  CSSObject,
-  Flex,
-  MantineTheme,
-  Menu,
-  Navbar,
-  Image,
-  Modal,
-  TextInput,
-  PasswordInput,
-  Button,
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { IconLogin, IconLogout, IconRegistered, IconSettings, IconUser } from '@tabler/icons-react';
-import React, { FC, useMemo, useState } from 'react';
+import { ActionIcon, CSSObject, Flex, MantineTheme, Menu, Navbar, Image } from '@mantine/core';
+import { IconLogin, IconLogout, IconRegistered, IconUser } from '@tabler/icons-react';
+import React, { FC, useState } from 'react';
 import { NavButton } from './NavButton';
 import { useNavbarHeight } from '../hooks/useNavbarHeight';
-import { useNavigate } from 'react-router-dom';
 import { routes } from '../routes';
-import { UsersService } from '../api/UsersService';
-import { SignInUserDto } from '../types/users';
-import { error, success } from '../services/helpers/notification';
-import { UserGetDto } from '../api/index.defs';
-import { useUserContext } from '../App';
+import { success } from '../services/helpers/notification';
+import { useUserContext } from '../users/useUserContext';
+import { SignInModal } from '../users/SignInModal';
+import { RegisterModal } from '../users/RegisterModal';
 
 export function PrimaryNavigation(): React.ReactElement {
-  const navigate = useNavigate();
   const { navbarHeight } = useNavbarHeight();
-  const [isOpen, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [loginIsOpen, setLoginOpen] = useState(false);
   const { user, setUser } = useUserContext();
 
   return (
@@ -50,7 +35,7 @@ export function PrimaryNavigation(): React.ReactElement {
 
             {!user ? (
               <Menu.Dropdown>
-                <Menu.Item icon={<IconLogin size={14} />} onClick={() => setOpen(true)}>
+                <Menu.Item icon={<IconLogin size={14} />} onClick={() => setLoginOpen(true)}>
                   Sign In
                 </Menu.Item>
                 <Menu.Item icon={<IconRegistered size={14} />} onClick={() => {}}>
@@ -59,12 +44,6 @@ export function PrimaryNavigation(): React.ReactElement {
               </Menu.Dropdown>
             ) : (
               <Menu.Dropdown>
-                <Menu.Item
-                  icon={<IconSettings size={14} />}
-                  onClick={() => navigate(routes.settings)}
-                >
-                  Settings
-                </Menu.Item>
                 <SignOutMenuItem
                   onSignOut={() => {
                     setUser(undefined);
@@ -75,8 +54,9 @@ export function PrimaryNavigation(): React.ReactElement {
             )}
           </Menu>
         </Flex>
-        <SignInModal open={isOpen} close={() => setOpen(false)} />
       </Navbar>
+      <RegisterModal open={open} close={() => setOpen(false)} />
+      <SignInModal open={loginIsOpen} close={() => setLoginOpen(false)} />
     </>
   );
 }
@@ -86,66 +66,6 @@ const SignOutMenuItem: FC<{ onSignOut: () => void }> = ({ onSignOut }) => (
     Sign Out
   </Menu.Item>
 );
-
-type SignInModalProps = {
-  open: boolean;
-  close: () => void;
-};
-
-const initialValues: SignInUserDto = {
-  userName: '',
-  password: '',
-} as const;
-
-export const SignInModal: FC<SignInModalProps> = ({ open, close }) => {
-  const { setUser } = useUserContext();
-  const form = useForm({
-    initialValues: initialValues,
-  });
-
-  const handleClose = () => {
-    close();
-    form.reset();
-  };
-
-  const handleSignIn = async (values: SignInUserDto) => {
-    const response = await UsersService.signInUser({ body: values });
-
-    if (response.hasErrors) {
-      error(response.errors?.[0].message);
-      handleClose();
-    }
-    setUser(response.data);
-
-    success('Signed in!');
-    handleClose();
-    return response.data;
-  };
-
-  const disableLogin = useMemo(
-    () => form.values.password === '' || form.values.userName === '',
-    [form]
-  );
-
-  return (
-    <Modal opened={open} onClose={handleClose} title="Login">
-      <form onSubmit={form.onSubmit(handleSignIn)}>
-        <div>
-          <TextInput withAsterisk label="Username" {...form.getInputProps('userName')} />
-          <PasswordInput withAsterisk label="Password" {...form.getInputProps('password')} />
-          <div>
-            <Button type="button" onClick={handleClose}>
-              Close
-            </Button>
-            <Button type="submit" disabled={disableLogin}>
-              Login
-            </Button>
-          </div>
-        </div>
-      </form>
-    </Modal>
-  );
-};
 
 function navbarSx(theme: MantineTheme): CSSObject {
   return {

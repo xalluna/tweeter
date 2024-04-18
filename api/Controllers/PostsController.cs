@@ -33,7 +33,7 @@ public class PostsController : ControllerBase
     }
     
     [HttpPost(Name = nameof(CreatePost))]
-    public async Task<ActionResult<Response<PostGetDto>>> CreatePost([FromBody] CreatePostRequest request)
+    public async Task<ActionResult<Response<PostDetailDto>>> CreatePost([FromBody] CreatePostRequest request)
     {
         var response = await _mediator.Send(request);
 

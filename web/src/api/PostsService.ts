@@ -3,6 +3,8 @@ import {
   PostDto,
   Error,
   CreatePostRequest,
+  PostDetailDtoResponse,
+  PostDetailDto,
   PostGetDtoResponse,
   PostGetDto,
   UpdatePostRequest,
@@ -48,7 +50,7 @@ export class PostsService {
       body?: CreatePostRequest;
     } = {} as any,
     options: IRequestOptions = {}
-  ): Promise<PostGetDtoResponse> {
+  ): Promise<PostDetailDtoResponse> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/posts';
 

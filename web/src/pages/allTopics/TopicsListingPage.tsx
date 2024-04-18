@@ -1,5 +1,5 @@
-import { FC, useState } from 'react';
-import { useAsync } from 'react-use';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useAsyncFn } from 'react-use';
 import {
   Avatar,
   Container,
@@ -13,34 +13,53 @@ import {
   TypographyStylesProvider,
   Divider,
   Button,
+  Textarea,
+  Grid,
+  Flex,
 } from '@mantine/core';
 import { TopicsService } from '../../api/TopicsService';
 import { formatDate } from '../../helpers/dateFormatter';
-import { PostDetailDto, TopicDetailDto } from '../../api/index.defs';
+import { CreatePostRequest, PostDetailDto, TopicDetailDto } from '../../api/index.defs';
 import { IconStar, IconStarFilled } from '@tabler/icons-react';
-import { success } from '../../services/helpers/notification';
+import { error, success } from '../../services/helpers/notification';
+import { useForm } from '@mantine/form';
+import { useUserContext } from '../../users/useUserContext';
+import { PostsService } from '../../api/PostsService';
+import { useTopicsContext } from '../../topics/useTopicsContext';
 
 export const TopicsListingPage: FC = () => {
-  const topics = useAsync(async () => {
+  const { classes } = useStyles();
+  const { topics, setTopics } = useTopicsContext();
+
+  const [, fetchTopics] = useAsyncFn(async () => {
     const response = await TopicsService.getAllTopics();
+    if (response.hasErrors) {
+      error(response.errors?.[0].message);
+    }
+
+    setTopics(response.data);
     return response.data;
   });
-  const { classes } = useStyles();
+
+  useEffect(() => {
+    fetchTopics();
+  }, [fetchTopics]);
 
   return (
     <Container className={classes.tweetContainer}>
       <h1>Latest Tweets</h1>
-      <Stack>
-        {topics.value && topics.value.map((topic, index) => <Topic topic={topic} key={index} />)}
-      </Stack>
+      <Stack>{topics && topics.map((topic, index) => <Topic topic={topic} key={index} />)}</Stack>
     </Container>
   );
 };
 
-const Topic: FC<{ topic: TopicDetailDto }> = ({ topic }) => {
+const Topic: FC<{
+  topic: TopicDetailDto;
+}> = ({ topic }) => {
+  const [isSubscribed, setSubscribed] = useState(false);
+  const { user } = useUserContext();
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
-  const [isSubscribed, setSubscribed] = useState(false);
 
   const handleSubscription = () => {
     success(isSubscribed ? 'Unsubscrived' : 'Subscribed');
@@ -54,40 +73,129 @@ const Topic: FC<{ topic: TopicDetailDto }> = ({ topic }) => {
       radius="md"
       className={classes.comment}
     >
-      <Group align="flex-start" className={classes.topicGroup}>
-        <Group align="flex-start">
-          <TweetAvatar createdByUserName={topic.createdByUserName?.charAt(0)} />
-          <div>
-            <TweetCreatedInfo
-              createdByUserName={topic.createdByUserName}
-              createdDate={topic.createdDate}
-            />
-            <TypographyStylesProvider className={classes.topicBody}>
-              <div className={classes.content}>{topic.name}</div>
-            </TypographyStylesProvider>
-          </div>
+      <Stack>
+        <Group align="flex-start" className={classes.topicGroup}>
+          <Group align="flex-start">
+            <MessageAvatar createdByUserName={topic.createdByUserName?.charAt(0)} />
+            <div>
+              <MessageCreatedInfo
+                createdByUserName={topic.createdByUserName}
+                createdDate={topic.createdDate}
+              />
+              <TypographyStylesProvider className={classes.topicBody}>
+                <div className={classes.content}>{topic.name}</div>
+              </TypographyStylesProvider>
+            </div>
+          </Group>
+
+          {user && (
+            <Button p={5} onClick={handleSubscription}>
+              {isSubscribed ? <IconStarFilled /> : <IconStar />}
+            </Button>
+          )}
         </Group>
 
-        <Button p={5} onClick={handleSubscription}>
-          {isSubscribed ? <IconStarFilled /> : <IconStar />}
-        </Button>
-      </Group>
+        {topic.posts && topic.posts?.length > 0 ? (
+          <Stack pl={50}>
+            {topic.posts.map((post, index) => {
+              return <Post post={post} key={index} />;
+            })}
+          </Stack>
+        ) : (
+          <>
+            <Divider />
+            <Text c="dimmed" className={classes.noComments}>
+              - No Comments -
+            </Text>
+          </>
+        )}
+        <CreateComment topicId={topic.id} />
+      </Stack>
+    </Paper>
+  );
+};
 
-      {topic.posts && topic.posts?.length > 0 ? (
-        <Stack pl={50}>
-          {topic.posts.map((post, index) => {
-            return <Post post={post} key={index} />;
-          })}
-        </Stack>
-      ) : (
+const CreateComment: FC<{
+  topicId?: number;
+}> = ({ topicId }) => {
+  const { addPost } = useTopicsContext();
+  const { user } = useUserContext();
+
+  const initialValues: CreatePostRequest = {
+    content: '',
+    topicId: topicId,
+  } as const;
+
+  const form = useForm({
+    initialValues: initialValues,
+  });
+
+  const handleCancel = () => {
+    form.reset();
+  };
+
+  const handleCreatePost = async (values: CreatePostRequest) => {
+    const response = await PostsService.createPost({
+      body: {
+        ...values,
+        userId: user?.id,
+      } as CreatePostRequest,
+    });
+
+    if (response.hasErrors) {
+      error(response.errors?.[0].message);
+      handleCancel();
+    }
+
+    if (response.data && topicId) addPost(topicId, response.data);
+
+    success('Comment posted!');
+    handleCancel();
+    return response.data;
+  };
+
+  const disabled = useMemo(
+    () => form.values.content === '' && !!topicId,
+    [form.values.content, topicId]
+  );
+
+  return (
+    <>
+      {user && (
         <>
           <Divider />
-          <Text c="dimmed" className={classes.noComments}>
-            - No Comments -
-          </Text>
+
+          <form onSubmit={form.onSubmit(handleCreatePost)}>
+            <Grid>
+              <Grid.Col
+                style={{
+                  alignContent: 'center',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  margin: 'auto',
+                }}
+                span={1}
+              >
+                <MessageAvatar createdByUserName={user.userName?.charAt(0)} />
+              </Grid.Col>
+              <Grid.Col span={11}>
+                <Textarea placeholder="Write a comment..." {...form.getInputProps('content')} />
+              </Grid.Col>
+            </Grid>
+            {form.isDirty() && (
+              <Flex justify="flex-end">
+                <Button type="button" color="gray" mt={10} mr={5} onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="submit" mt={10} ml={5} disabled={disabled}>
+                  Post
+                </Button>
+              </Flex>
+            )}
+          </form>
         </>
       )}
-    </Paper>
+    </>
   );
 };
 
@@ -103,8 +211,8 @@ const Post: FC<{ post: PostDetailDto }> = ({ post }) => {
       className={classes.comment}
     >
       <Group>
-        <TweetAvatar createdByUserName={post.createdByUserName?.charAt(0)} />
-        <TweetCreatedInfo
+        <MessageAvatar createdByUserName={post.createdByUserName?.charAt(0)} />
+        <MessageCreatedInfo
           createdByUserName={post.createdByUserName}
           createdDate={post.createdDate}
         />
@@ -117,13 +225,13 @@ const Post: FC<{ post: PostDetailDto }> = ({ post }) => {
   );
 };
 
-const TweetAvatar: FC<{ createdByUserName?: string }> = ({ createdByUserName }) => (
+const MessageAvatar: FC<{ createdByUserName?: string }> = ({ createdByUserName }) => (
   <Avatar color="blue" radius="xl" variant="filled">
     {createdByUserName?.charAt(0)}
   </Avatar>
 );
 
-const TweetCreatedInfo: FC<{
+const MessageCreatedInfo: FC<{
   createdByUserName?: string;
   createdDate?: Date;
 }> = ({ createdByUserName, createdDate }) => {
