@@ -47,17 +47,10 @@ public class GetHomePageTopicsRequestHandler: IRequestHandler<GetHomePageTopicsR
     {
         foreach (var topic in topics)
         {
-            var sortedPosts = topic.Posts.OrderByDescending(x => x.CreatedDate).ToList();
-            var firstPost = sortedPosts.FirstOrDefault();
-            
-            if (firstPost is not null)
-            {
-                topic.Posts = new List<PostDetailDto> { firstPost };
-            }
-            if (sortedPosts.Count > 1)
-            {
-                topic.Posts.Add(sortedPosts[1]);
-            }
+            topic.Posts = topic.Posts
+                .OrderByDescending(x => x.CreatedDate)
+                .Take(2)
+                .ToList();
         }
     }
 }
