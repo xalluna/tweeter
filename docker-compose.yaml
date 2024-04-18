@@ -1,16 +1,6 @@
 version: "3.8"
 
 services:
-  # db:
-  #   image: postgres
-  #   restart: always
-  #   ports:
-  #     - "3000:80"
-  #   environment:
-  #     POSTGRES_PASSWORD: 1q1q1q1q!Q!Q!Q!Q
-  #     POSTGRES_USER: tweeter
-  #     POSTGRES_DB: tweeter
-
   web:
     build: ./web
     image: brandonbarrstudentdev/tweeter-web:latest
@@ -22,7 +12,3 @@ services:
     image: brandonbarrstudentdev/tweeter-api:latest
     ports:
       - "7192:80"
-    # depends_on:
-    #   - db
-    # environment:
-    #   - ConnectionStrings__DefaultConnection=Server=tcp:tweeter-db.database.windows.net,1433;Initial Catalog=tweeter-db;Persist Security Info=False;User ID=tweeter-admin;Password=59)p4e<\LUW654Lt;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
