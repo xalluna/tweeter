@@ -1,4 +1,5 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+ENV ConnectionStrings__DefaultConnection Server=tcp:tweeter-db.database.windows.net,1433;Initial Catalog=tweeter-db;Persist Security Info=False;User ID=tweeter-admin;Password=59)p4e<\LUW654Lt;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443

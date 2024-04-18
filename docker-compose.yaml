@@ -1,15 +1,15 @@
 version: "3.8"
 
 services:
-  db:
-    build: .
-    image: brandonbarrstudentdev/tweeter-db:latest
-    restart: always
-    environment:
-      SA_PASSWORD: "1q1q1q1q!Q!Q!Q!Q"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
+  # db:
+  #   image: postgres
+  #   restart: always
+  #   ports:
+  #     - "3000:80"
+  #   environment:
+  #     POSTGRES_PASSWORD: 1q1q1q1q!Q!Q!Q!Q
+  #     POSTGRES_USER: tweeter
+  #     POSTGRES_DB: tweeter
 
   web:
     build: ./web
@@ -22,7 +22,7 @@ services:
     image: brandonbarrstudentdev/tweeter-api:latest
     ports:
       - "7192:80"
-    depends_on:
-      - db
-    environment:
-      - ConnectionStrings=Server=db;Database=tweeter;User Id=sa;Password=1q1q1q1q!Q!Q!Q!Q;MultipleActiveResultSets=true;TrustServerCertificate=true
+    # depends_on:
+    #   - db
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Server=tcp:tweeter-db.database.windows.net,1433;Initial Catalog=tweeter-db;Persist Security Info=False;User ID=tweeter-admin;Password=59)p4e<\LUW654Lt;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
