@@ -31,6 +31,14 @@ public class TopicsController: ControllerBase
 
         return response.HasErrors ? NotFound(response) : Ok(response);
     }
+    
+    [HttpGet("home-page/{userId:int}", Name = nameof(GetHomePageTopics))]
+    public async Task<ActionResult<Response<TopicGetDto>>> GetHomePageTopics([FromRoute] int userId)
+    {
+        var response = await _mediator.Send(new GetHomePageTopicsRequest(userId));
+
+        return response.HasErrors ? NotFound(response) : Ok(response);
+    }
 
     [HttpPost(Name = nameof(CreateTopic))]
     public async Task<ActionResult<Response<TopicGetDto>>> CreateTopic([FromBody] CreateTopicRequest request)
