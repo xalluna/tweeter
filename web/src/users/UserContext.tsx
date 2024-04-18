@@ -2,6 +2,7 @@ import React, { FC, ReactNode, useState } from 'react';
 import { UserDetailDto } from '../api/index.defs';
 import { UsersService } from '../api/UsersService';
 import { error } from '../services/helpers/notification';
+import { useAsyncFn } from 'react-use';
 
 type UserProviderProps = {
   children: ReactNode;
@@ -25,6 +26,26 @@ export const UserProvider: FC<UserProviderProps> = ({ children }) => {
     setTopicIds(user?.topicIds);
   };
 
+  const [, addTopicId] = useAsyncFn(
+    async (topicId: number) => {
+      if (!topicIds) return;
+
+      const newTopicIds = [...topicIds, topicId];
+      setTopicIds(newTopicIds);
+    },
+    [topicIds]
+  );
+
+  const [, removeTopicId] = useAsyncFn(
+    async (topicId: number) => {
+      if (!topicIds) return;
+
+      const newTopicIds = [...topicIds.filter((x) => x != topicId)];
+      setTopicIds(newTopicIds);
+    },
+    [topicIds]
+  );
+
   const subscribe = async (topicId: number) => {
     if (!topicIds) return;
     const response = await UsersService.subscribe({ topicId: topicId, userId: user?.id });
@@ -34,8 +55,7 @@ export const UserProvider: FC<UserProviderProps> = ({ children }) => {
       return;
     }
 
-    const newTopicIds = [...topicIds, topicId];
-    setTopicIds(newTopicIds);
+    await addTopicId(topicId);
   };
 
   const unsubscribe = async (topicId: number) => {
@@ -47,8 +67,7 @@ export const UserProvider: FC<UserProviderProps> = ({ children }) => {
       return;
     }
 
-    const newTopicIds = [...topicIds.filter((x) => x != topicId)];
-    setTopicIds(newTopicIds);
+    await removeTopicId(topicId);
   };
 
   return (
