@@ -22,13 +22,13 @@ public class PostDetailDto: PostGetDto
 public class PostGetDto: PostDto
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public bool IsDeleted { get; set; }
 }
 
 public class PostDto
 {
+    public int UserId { get; set; }
     public int TopicId { get; set; }
     public string Content { get; set; }
 }
