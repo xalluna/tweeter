@@ -95,7 +95,7 @@ public class UsersController : ControllerBase
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }
 
-    [HttpPost("subscribe/{topicId}, ", Name = nameof(Subscribe))]
+    [HttpPost("subscribe/{topicId}", Name = nameof(Subscribe))]
     public async Task<ActionResult<Response<UserTopicDto>>> Subscribe([FromRoute] int topicId)
     {
         var response = await _mediator.Send(new SubscribeToTopicRequest(topicId));

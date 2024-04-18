@@ -12,10 +12,7 @@ export type NavMenuButtonProps = {
 } & React.ComponentPropsWithoutRef<'button'>;
 
 export const NavMenuButton = forwardRef<HTMLButtonElement, NavMenuButtonProps>(
-  (
-    { itemRoutes: routes, children, name, sx, ...props }: NavMenuButtonProps,
-    ref
-  ) => {
+  ({ itemRoutes: routes, children, name, sx, ...props }: NavMenuButtonProps, ref) => {
     const navMenuButtonSx = useNavMenuButtonSx(routes);
 
     return (
@@ -38,8 +35,7 @@ function useNavMenuButtonSx(itemRoutes: string[]) {
     let isActiveRoute: boolean = false;
 
     itemRoutes.forEach((route) => {
-      isActiveRoute =
-        pathSegment === route && route !== routes.home ? true : isActiveRoute;
+      isActiveRoute = pathSegment === route && route !== routes.home ? true : isActiveRoute;
     });
 
     return isActiveRoute;
@@ -47,17 +43,14 @@ function useNavMenuButtonSx(itemRoutes: string[]) {
 
   return (theme: MantineTheme): CSSObject => {
     return {
-      padding: '10px 20px',
+      padding: '10px 15px',
       borderRadius: '4px',
       transition: 'ease-in .2s',
-      color: 'white',
-      backgroundColor: `${
-        isActivePath
-          ? theme.colors.secondaryBlueColors[3]
-          : theme.colors.secondaryBlueColors[1]
-      }`,
+      color: `${isActivePath ? theme.colors.primaryColors[4] : 'white'}`,
+      backgroundColor: 'transparent',
       ':hover': {
-        backgroundColor: theme.colors.secondaryBlueColors[2],
+        color: 'white',
+        backgroundColor: theme.colors.primaryColors[0],
       },
     };
   };

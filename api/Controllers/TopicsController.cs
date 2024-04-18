@@ -16,8 +16,8 @@ public class TopicsController: ControllerBase
         _mediator = mediator;
     }
     
-    [HttpGet(Name = nameof(GetAllTopic))]
-    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllTopic()
+    [HttpGet(Name = nameof(GetAllTopics))]
+    public async Task<ActionResult<Response<List<TopicDetailDto>>>> GetAllTopics()
     {
         var response = await _mediator.Send(new GetAllTopicsRequest());
 

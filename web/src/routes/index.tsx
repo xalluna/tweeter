@@ -2,7 +2,7 @@ import { Env } from '../constants/env';
 
 export const routes = {
   home: '/',
-  inventory: '/inventory',
+  allTopics: '/all-topics',
   cardUpload: '/card-upload',
   decks: '/decks',
   deckBuilder: '/deck-builder',
