@@ -2,16 +2,18 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using tweeter.Data;
+using tweeter.Features.UserTopics;
 using tweeter.Shared;
 
 namespace tweeter.Features.Users;
 
-public class CreateUserRequest : UserCreateDto, IRequest<Response<UserGetDto>>
+public class CreateUserRequest : UserCreateDto, IRequest<Response<UserDetailDto>>
 {
 }
 
-public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Response<UserGetDto>>
+public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Response<UserDetailDto>>
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
@@ -29,14 +31,14 @@ public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Respo
         _userManager = userManager;
     }
 
-    public async Task<Response<UserGetDto>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
+    public async Task<Response<UserDetailDto>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             var errors = _mapper.Map<List<Error>>(validationResult.Errors);
-            return new Response<UserGetDto> { Errors = errors };
+            return new Response<UserDetailDto> { Errors = errors };
         }
 
         var user = _mapper.Map<User>(request);
@@ -45,13 +47,13 @@ public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Respo
         if (!result.Succeeded)
         {
             var errors = _mapper.Map<List<Error>>(result.Errors);
-            return new Response<UserGetDto>{Errors = errors};
+            return new Response<UserDetailDto>{Errors = errors};
         }
 
         if (!result.Succeeded)
         {
             var errors = _mapper.Map<List<Error>>(result.Errors);
-            return new Response<UserGetDto> { Errors = errors };
+            return new Response<UserDetailDto> { Errors = errors };
         }
 
         await _dataContext.SaveChangesAsync(cancellationToken);
@@ -60,10 +62,18 @@ public class CreateUserRequestHandler : IRequestHandler<CreateUserRequest, Respo
 
         if (returnedUser is null)
         {
-            return Error.AsResponse<UserGetDto>("Something went wrong.", "user");
+            return Error.AsResponse<UserDetailDto>("Something went wrong.", "user");
         }
+        
+        var topicIds = await _dataContext.Set<UserTopic>()
+            .Where(x => x.UserId == user.Id)
+            .Select(x => x.TopicId)
+            .ToListAsync(cancellationToken:new CancellationToken());
 
-        return _mapper.Map<UserGetDto>(returnedUser).AsResponse();
+        var mappedUser = _mapper.Map<UserDetailDto>(returnedUser);
+        mappedUser.TopicIds = topicIds;
+        
+        return mappedUser.AsResponse();
     }
 }
 

@@ -455,6 +455,42 @@ export class UpdateUserRequest {
   }
 }
 
+export class UserDetailDto {
+  /**  */
+  'userName'?: string;
+
+  /**  */
+  'email'?: string;
+
+  /**  */
+  'phoneNumber'?: string;
+
+  /**  */
+  'id'?: number;
+
+  /**  */
+  'topicIds'?: number[];
+
+  constructor(data: UserDetailDto = {}) {
+    Object.assign(this, data);
+  }
+}
+
+export class UserDetailDtoResponse {
+  /**  */
+  'data'?: UserDetailDto;
+
+  /**  */
+  'errors'?: Error[];
+
+  /**  */
+  'hasErrors'?: boolean;
+
+  constructor(data: UserDetailDtoResponse = {}) {
+    Object.assign(this, data);
+  }
+}
+
 export class UserDto {
   /**  */
   'userName'?: string;

@@ -14,7 +14,6 @@ import { useNavbarHeight } from './hooks/useNavbarHeight';
 import { NavLink, useLocation } from 'react-router-dom';
 import { CSSProperties, FC, useMemo } from 'react';
 import { useAsync } from 'react-use';
-import { UserProvider } from './users/UserContext';
 import { TopicsProvider } from './topics/TopicsContext';
 
 const App: FC = () => {
@@ -39,28 +38,26 @@ const App: FC = () => {
   };
 
   return (
-    <UserProvider>
-      <TopicsProvider>
-        <AppShell layout="alt" padding={0} header={<PrimaryNavigation />}>
-          {!userState.loading ? (
-            <ScrollArea h={remainingHeight} sx={scrollAreaSx}>
-              <Box sx={useContainerSx}>
-                <AppRoutes />
-              </Box>
-              {hideFooter && (
-                <NavLink style={navLinkStyle} onClick={() => sphealingGood()} to={location}>
-                  <Center sx={footerSx}>(≖ᴗ≖✿)</Center>
-                </NavLink>
-              )}
-            </ScrollArea>
-          ) : (
-            <Container h={remainingHeight}>
-              <Loader sx={loaderStyle} size="150px" color="#9d65db" />
-            </Container>
-          )}
-        </AppShell>
-      </TopicsProvider>
-    </UserProvider>
+    <TopicsProvider>
+      <AppShell layout="alt" padding={0} header={<PrimaryNavigation />}>
+        {!userState.loading ? (
+          <ScrollArea h={remainingHeight} sx={scrollAreaSx}>
+            <Box sx={useContainerSx}>
+              <AppRoutes />
+            </Box>
+            {hideFooter && (
+              <NavLink style={navLinkStyle} onClick={() => sphealingGood()} to={location}>
+                <Center sx={footerSx}>(≖ᴗ≖✿)</Center>
+              </NavLink>
+            )}
+          </ScrollArea>
+        ) : (
+          <Container h={remainingHeight}>
+            <Loader sx={loaderStyle} size="150px" color="#9d65db" />
+          </Container>
+        )}
+      </AppShell>
+    </TopicsProvider>
   );
 };
 

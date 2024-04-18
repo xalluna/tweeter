@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { useAsyncFn } from 'react-use';
 import {
   Avatar,
@@ -46,9 +46,15 @@ export const TopicsListingPage: FC = () => {
   }, [fetchTopics]);
 
   return (
-    <Container className={classes.tweetContainer}>
+    <Container className={classes.pageContainer}>
       <h1>Latest Tweets</h1>
-      <Stack>{topics && topics.map((topic, index) => <Topic topic={topic} key={index} />)}</Stack>
+      <Stack spacing="lg">
+        {topics && topics.map((topic, index) => <Topic topic={topic} key={index} />)}
+        <Divider />
+        <Text c="dimmed" className={classes.noComments}>
+          - The End -
+        </Text>
+      </Stack>
     </Container>
   );
 };
@@ -56,15 +62,8 @@ export const TopicsListingPage: FC = () => {
 const Topic: FC<{
   topic: TopicDetailDto;
 }> = ({ topic }) => {
-  const [isSubscribed, setSubscribed] = useState(false);
-  const { user } = useUserContext();
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
-
-  const handleSubscription = () => {
-    success(isSubscribed ? 'Unsubscrived' : 'Subscribed');
-    setSubscribed(!isSubscribed);
-  };
 
   return (
     <Paper
@@ -88,11 +87,7 @@ const Topic: FC<{
             </div>
           </Group>
 
-          {user && (
-            <Button p={5} onClick={handleSubscription}>
-              {isSubscribed ? <IconStarFilled /> : <IconStar />}
-            </Button>
-          )}
+          {topic.id && <Subscription topicId={topic.id} />}
         </Group>
 
         {topic.posts && topic.posts?.length > 0 ? (
@@ -112,6 +107,35 @@ const Topic: FC<{
         <CreateComment topicId={topic.id} />
       </Stack>
     </Paper>
+  );
+};
+
+const Subscription: FC<{ topicId: number }> = ({ topicId }) => {
+  const { user, userSubscriptionTopicIds, subscribe, unsubscribe } = useUserContext();
+
+  const isSubscribed = useMemo(
+    () => userSubscriptionTopicIds?.includes(topicId ?? 0) ?? false,
+    [topicId, userSubscriptionTopicIds]
+  );
+
+  const handleSubscription = async () => {
+    if (isSubscribed) {
+      unsubscribe(topicId);
+      success('Unsubscribed');
+      return;
+    }
+
+    subscribe(topicId);
+    success('Subscribed');
+  };
+  return (
+    <>
+      {user && (
+        <Button p={5} onClick={handleSubscription}>
+          {isSubscribed ? <IconStarFilled /> : <IconStar />}
+        </Button>
+      )}
+    </>
   );
 };
 
@@ -246,8 +270,9 @@ const MessageCreatedInfo: FC<{
 };
 
 const useStyles = createStyles(() => ({
-  tweetContainer: {
+  pageContainer: {
     color: '#e6e6e6',
+    paddingBottom: 50,
   },
 
   comment: {

@@ -3,10 +3,12 @@ import {
   UserDto,
   Error,
   CreateUserRequest,
-  UserGetDtoResponse,
-  UserGetDto,
+  UserDetailDtoResponse,
+  UserDetailDto,
   DeleteUserRequest,
   Response,
+  UserGetDtoResponse,
+  UserGetDto,
   UpdateUserRequest,
   UpdatePasswordRequest,
   SignInUserRequest,
@@ -53,7 +55,7 @@ export class UsersService {
       body?: CreateUserRequest;
     } = {} as any,
     options: IRequestOptions = {}
-  ): Promise<UserGetDtoResponse> {
+  ): Promise<UserDetailDtoResponse> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/users';
 
@@ -167,7 +169,7 @@ export class UsersService {
       body?: SignInUserRequest;
     } = {} as any,
     options: IRequestOptions = {}
-  ): Promise<UserGetDtoResponse> {
+  ): Promise<UserDetailDtoResponse> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/users/sign-in';
 
@@ -211,6 +213,8 @@ export class UsersService {
     params: {
       /**  */
       topicId: number;
+      /**  */
+      userId?: number;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<UserTopicDtoResponse> {
@@ -219,6 +223,7 @@ export class UsersService {
       url = url.replace('{topicId}', params['topicId'] + '');
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+      configs.params = { userId: params['userId'] };
 
       axios(configs, resolve, reject);
     });
@@ -230,6 +235,8 @@ export class UsersService {
     params: {
       /**  */
       topicId: number;
+      /**  */
+      userId?: number;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<Response> {
@@ -238,6 +245,7 @@ export class UsersService {
       url = url.replace('{topicId}', params['topicId'] + '');
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+      configs.params = { userId: params['userId'] };
 
       axios(configs, resolve, reject);
     });

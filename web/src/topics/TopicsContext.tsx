@@ -16,9 +16,11 @@ export const TopicsProvider: FC<TopicsProviderProps> = ({ children }) => {
   const [topics, setTopics] = useState<TopicDetailDto[]>();
   const addPost = (topicId: number, post: PostDetailDto) => {
     if (!topics) return;
+
     const newTopics = [...topics];
     const index = newTopics.findIndex((x) => x.id === topicId);
     const topicPosts = newTopics[index].posts;
+
     if (topicPosts) {
       newTopics[index].posts = [...topicPosts, post];
       setTopics(newTopics);
