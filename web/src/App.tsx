@@ -11,10 +11,11 @@ import {
 import { PrimaryNavigation } from './navigation/PrimaryNavigation';
 import { AppRoutes } from './routes/AppRoutes';
 import { useNavbarHeight } from './hooks/useNavbarHeight';
-
 import { NavLink, useLocation } from 'react-router-dom';
-import { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC, ReactNode, useContext, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
+import React from 'react';
+import { UserGetDto } from './api/index.defs';
 
 const App: FC = () => {
   const { navbarHeight, remainingHeight } = useNavbarHeight();
@@ -38,25 +39,52 @@ const App: FC = () => {
   };
 
   return (
-    <AppShell layout="alt" padding={0} header={<PrimaryNavigation />}>
-      {!userState.loading ? (
-        <ScrollArea h={remainingHeight} sx={scrollAreaSx}>
-          <Box sx={useContainerSx}>
-            <AppRoutes />
-          </Box>
-          {hideFooter && (
-            <NavLink style={navLinkStyle} onClick={() => sphealingGood()} to={location}>
-              <Center sx={footerSx}>(≖ᴗ≖✿)</Center>
-            </NavLink>
-          )}
-        </ScrollArea>
-      ) : (
-        <Container h={remainingHeight}>
-          <Loader sx={loaderStyle} size="150px" color="#9d65db" />
-        </Container>
-      )}
-    </AppShell>
+    <UserProvider>
+      <AppShell layout="alt" padding={0} header={<PrimaryNavigation />}>
+        {!userState.loading ? (
+          <ScrollArea h={remainingHeight} sx={scrollAreaSx}>
+            <Box sx={useContainerSx}>
+              <AppRoutes />
+            </Box>
+            {hideFooter && (
+              <NavLink style={navLinkStyle} onClick={() => sphealingGood()} to={location}>
+                <Center sx={footerSx}>(≖ᴗ≖✿)</Center>
+              </NavLink>
+            )}
+          </ScrollArea>
+        ) : (
+          <Container h={remainingHeight}>
+            <Loader sx={loaderStyle} size="150px" color="#9d65db" />
+          </Container>
+        )}
+      </AppShell>
+    </UserProvider>
   );
+};
+
+type UserContextProps = {
+  user?: UserGetDto;
+  setUser: (user?: UserGetDto) => void;
+};
+export const UserContext = React.createContext<UserContextProps | undefined>(undefined);
+
+export const useUserContext = () => {
+  const context = useContext(UserContext);
+
+  if (!context) {
+    throw new Error('useUserContext must be used within UserProvider');
+  }
+  return context;
+};
+
+type UserProviderProps = {
+  children: ReactNode;
+};
+
+export const UserProvider: FC<UserProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<UserGetDto>();
+
+  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 
 export default App;
