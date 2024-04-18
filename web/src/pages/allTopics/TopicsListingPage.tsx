@@ -16,6 +16,7 @@ import {
   Textarea,
   Grid,
   Flex,
+  Tooltip,
 } from '@mantine/core';
 import { TopicsService } from '../../api/TopicsService';
 import { formatDate } from '../../helpers/dateFormatter';
@@ -131,9 +132,11 @@ const Subscription: FC<{ topicId: number }> = ({ topicId }) => {
   return (
     <>
       {user && (
-        <Button p={5} onClick={handleSubscription}>
-          {isSubscribed ? <IconStarFilled /> : <IconStar />}
-        </Button>
+        <Tooltip label={isSubscribed ? 'Unsubscribe' : 'Subscribe'}>
+          <Button p={5} onClick={handleSubscription}>
+            {isSubscribed ? <IconStarFilled /> : <IconStar />}
+          </Button>
+        </Tooltip>
       )}
     </>
   );
