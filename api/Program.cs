@@ -27,8 +27,7 @@ app.UseCors(policyBuilder =>
 {
     policyBuilder.WithOrigins(builder.Configuration[AppSettings.CorsOrigins].Split(","))
         .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
+        .AllowAnyHeader();
 });
 
 SeedData(app);
