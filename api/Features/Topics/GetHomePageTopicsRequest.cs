@@ -50,6 +50,7 @@ public class GetHomePageTopicsRequestHandler: IRequestHandler<GetHomePageTopicsR
             topic.Posts = topic.Posts
                 .OrderByDescending(x => x.CreatedDate)
                 .Take(2)
+                .OrderBy(x => x.CreatedDate)
                 .ToList();
         }
     }

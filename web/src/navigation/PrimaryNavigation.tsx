@@ -1,6 +1,6 @@
 import { ActionIcon, CSSObject, Flex, MantineTheme, Menu, Navbar, Image } from '@mantine/core';
 import { IconLogin, IconLogout, IconRegistered, IconUser } from '@tabler/icons-react';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { NavButton } from './NavButton';
 import { useNavbarHeight } from '../hooks/useNavbarHeight';
 import { routes } from '../routes';
@@ -8,11 +8,12 @@ import { success } from '../services/helpers/notification';
 import { useUserContext } from '../users/useUserContext';
 import { SignInModal } from '../users/SignInModal';
 import { RegisterModal } from '../users/RegisterModal';
+import { useDisclosure } from '@mantine/hooks';
 
 export function PrimaryNavigation(): React.ReactElement {
   const { navbarHeight } = useNavbarHeight();
-  const [open, setOpen] = useState(false);
-  const [loginIsOpen, setLoginOpen] = useState(false);
+  const [loginIsOpen, login] = useDisclosure();
+  const [registerIsOpen, register] = useDisclosure();
   const { user, setUser } = useUserContext();
 
   return (
@@ -35,10 +36,10 @@ export function PrimaryNavigation(): React.ReactElement {
 
             {!user ? (
               <Menu.Dropdown>
-                <Menu.Item icon={<IconLogin size={14} />} onClick={() => setLoginOpen(true)}>
+                <Menu.Item icon={<IconLogin size={14} />} onClick={login.open}>
                   Sign In
                 </Menu.Item>
-                <Menu.Item icon={<IconRegistered size={14} />} onClick={() => {}}>
+                <Menu.Item icon={<IconRegistered size={14} />} onClick={register.open}>
                   Register
                 </Menu.Item>
               </Menu.Dropdown>
@@ -55,8 +56,8 @@ export function PrimaryNavigation(): React.ReactElement {
           </Menu>
         </Flex>
       </Navbar>
-      <RegisterModal open={open} close={() => setOpen(false)} />
-      <SignInModal open={loginIsOpen} close={() => setLoginOpen(false)} />
+      <RegisterModal open={registerIsOpen} close={register.close} />
+      <SignInModal open={loginIsOpen} close={login.close} />
     </>
   );
 }

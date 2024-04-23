@@ -129,6 +129,25 @@ export class TopicsService {
   /**
    *
    */
+  static getHomePageTopics(
+    params: {
+      /**  */
+      userId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<TopicGetDtoListResponse> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/topics/home-page/{userId}';
+      url = url.replace('{userId}', params['userId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   *
+   */
   static getAllTopicsByUserId(
     params: {
       /**  */

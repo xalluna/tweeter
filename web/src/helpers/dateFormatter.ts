@@ -20,5 +20,5 @@ export function formatDate(date: Date) {
   }
 
   const minutes = Math.floor(milisecondsSinceDate / 60000);
-  return `${minutes} minute${minutes != 1 ? 's' : ''} ago`;
+  return minutes >= 1 ? `${minutes} minute${minutes != 1 ? 's' : ''} ago` : 'Now';
 }

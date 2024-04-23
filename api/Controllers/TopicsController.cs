@@ -33,7 +33,7 @@ public class TopicsController: ControllerBase
     }
     
     [HttpGet("home-page/{userId:int}", Name = nameof(GetHomePageTopics))]
-    public async Task<ActionResult<Response<TopicGetDto>>> GetHomePageTopics([FromRoute] int userId)
+    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetHomePageTopics([FromRoute] int userId)
     {
         var response = await _mediator.Send(new GetHomePageTopicsRequest(userId));
 

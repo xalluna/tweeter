@@ -1,13 +1,14 @@
 import { FC, useEffect } from 'react';
 import { useAsyncFn } from 'react-use';
-import { Container, Stack, createStyles, Text, Divider } from '@mantine/core';
+import { Stack } from '@mantine/core';
 import { TopicsService } from '../../api/TopicsService';
 import { error } from '../../services/helpers/notification';
 import { useTopicsContext } from '../../topics/useTopicsContext';
 import { Topic } from '../../topics/Topic';
+import { BasicPage } from '../../BasicPage';
+import { TopicDetailDto } from '../../api/index.defs';
 
 export const TopicsListingPage: FC = () => {
-  const { classes } = useStyles();
   const { topics, setTopics } = useTopicsContext();
 
   const [, fetchTopics] = useAsyncFn(async () => {
@@ -25,29 +26,20 @@ export const TopicsListingPage: FC = () => {
   }, [fetchTopics]);
 
   return (
-    <Container className={classes.pageContainer}>
-      <h1>Latest Tweets</h1>
-      <Stack spacing="lg">
-        {topics && topics.map((topic, index) => <Topic topic={topic} key={index} />)}
-        <Divider />
-        <Text c="dimmed" className={classes.theEnd}>
-          - The End -
-        </Text>
-      </Stack>
-    </Container>
+    <BasicPage title="Latest Tweets">
+      <TopicsDisplay topics={topics} />
+    </BasicPage>
   );
 };
 
-const useStyles = createStyles(() => ({
-  pageContainer: {
-    color: '#e6e6e6',
-    paddingBottom: 50,
-  },
-
-  theEnd: {
-    display: 'flex',
-    justifyContent: 'center',
-    margin: 'auto',
-    paddingTop: 10,
-  },
-}));
+export const TopicsDisplay: FC<{ topics?: TopicDetailDto[] }> = ({ topics }) => {
+  return (
+    <Stack spacing="lg">
+      {topics ? (
+        topics.map((topic, index) => <Topic topic={topic} key={index} />)
+      ) : (
+        <>No Topics to show</>
+      )}
+    </Stack>
+  );
+};
