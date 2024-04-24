@@ -126,6 +126,9 @@ export class CreateTopicRequest {
   /**  */
   'name'?: string;
 
+  /**  */
+  'userId'?: number;
+
   constructor(data: CreateTopicRequest = {}) {
     Object.assign(this, data);
   }

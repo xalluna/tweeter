@@ -129,7 +129,7 @@ export class TopicsService {
   /**
    *
    */
-  static getAllTopicsByUserId(
+  static getHomePageTopics(
     params: {
       /**  */
       userId: number;
@@ -137,7 +137,26 @@ export class TopicsService {
     options: IRequestOptions = {}
   ): Promise<TopicGetDtoListResponse> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/topics/users/{userId}';
+      let url = basePath + '/api/topics/home-page/{userId}';
+      url = url.replace('{userId}', params['userId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   *
+   */
+  static getAllSubscribedTopics(
+    params: {
+      /**  */
+      userId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<TopicGetDtoListResponse> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/topics/subscriptions/{userId}';
       url = url.replace('{userId}', params['userId'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);

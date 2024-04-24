@@ -31,6 +31,22 @@ public class TopicsController: ControllerBase
 
         return response.HasErrors ? NotFound(response) : Ok(response);
     }
+    
+    [HttpGet("home-page/{userId:int}", Name = nameof(GetHomePageTopics))]
+    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetHomePageTopics([FromRoute] int userId)
+    {
+        var response = await _mediator.Send(new GetHomePageTopicsRequest(userId));
+
+        return response.HasErrors ? NotFound(response) : Ok(response);
+    }
+    
+    [HttpGet("subscriptions/{userId:int}", Name = nameof(GetAllSubscribedTopics))]
+    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllSubscribedTopics([FromRoute] int userId)
+    {
+        var response = await _mediator.Send(new GetAllSubscribedTopicsRequest(userId));
+
+        return response.HasErrors ? NotFound(response) : Ok(response);
+    }
 
     [HttpPost(Name = nameof(CreateTopic))]
     public async Task<ActionResult<Response<TopicGetDto>>> CreateTopic([FromBody] CreateTopicRequest request)
@@ -57,14 +73,6 @@ public class TopicsController: ControllerBase
     public async Task<ActionResult<Response>> DeleteTopic([FromRoute] int id)
     {
         var response = await _mediator.Send(new DeleteTopicRequest(id));
-
-        return response.HasErrors ? BadRequest(response) : Ok(response);
-    }
-    
-    [HttpGet("users/{userId}", Name = nameof(GetAllTopicsByUserId))]
-    public async Task<ActionResult<Response<List<TopicGetDto>>>> GetAllTopicsByUserId([FromRoute] int userId)
-    {
-        var response = await _mediator.Send(new GetAllTopicsByUserIdRequest(userId));
 
         return response.HasErrors ? BadRequest(response) : Ok(response);
     }

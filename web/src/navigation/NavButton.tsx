@@ -2,6 +2,7 @@ import { CSSObject, MantineTheme, UnstyledButton } from '@mantine/core';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { routes } from '../routes/index';
+import { useWindowScroll } from '@mantine/hooks';
 
 export type NavButtonProps = {
   children?: JSX.Element | string;
@@ -12,9 +13,15 @@ export type NavButtonProps = {
 export function NavButton({ route, children, sx }: NavButtonProps): React.ReactElement {
   const navigate = useNavigate();
   const navButtonSx = useNavButtonSx(route);
+  const [, scrollTo] = useWindowScroll();
+
+  const onClick = () => {
+    navigate(route);
+    scrollTo({ y: 0 });
+  };
 
   return (
-    <UnstyledButton sx={sx ?? navButtonSx} onClick={() => navigate(route)}>
+    <UnstyledButton sx={sx ?? navButtonSx} onClick={onClick}>
       {children}
     </UnstyledButton>
   );
