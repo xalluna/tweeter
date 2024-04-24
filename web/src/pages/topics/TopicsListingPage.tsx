@@ -11,7 +11,7 @@ import { TopicDetailDto } from '../../api/index.defs';
 export const TopicsListingPage: FC = () => {
   const { topics, setTopics } = useTopicsContext();
 
-  const [, fetchTopics] = useAsyncFn(async () => {
+  const [topicsState, fetchTopics] = useAsyncFn(async () => {
     const response = await TopicsService.getAllTopics();
     if (response.hasErrors) {
       error(response.errors?.[0].message);
@@ -26,7 +26,7 @@ export const TopicsListingPage: FC = () => {
   }, [fetchTopics]);
 
   return (
-    <BasicPage title="Latest Topics">
+    <BasicPage title="Latest Topics" loading={topicsState.loading}>
       <TopicsDisplay topics={topics} />
     </BasicPage>
   );

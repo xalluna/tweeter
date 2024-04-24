@@ -12,7 +12,7 @@ export const SubscriptionListing: FC = () => {
   const { topics, setTopics } = useTopicsContext();
   const { user } = useUserContext();
 
-  const [, fetchTopics] = useAsyncFn(async (userId?: number) => {
+  const [topicsState, fetchTopics] = useAsyncFn(async (userId?: number) => {
     const response = await TopicsService.getAllSubscribedTopics({ userId: userId ?? 0 });
     if (response.hasErrors) {
       error(response.errors?.[0].message);
@@ -27,7 +27,7 @@ export const SubscriptionListing: FC = () => {
   }, [fetchTopics, user?.id]);
 
   return (
-    <BasicPage title="Subscriptions">
+    <BasicPage title="Subscriptions" loading={topicsState.loading}>
       {user ? <TopicsDisplay topics={topics} /> : <SignInWarning />}
     </BasicPage>
   );

@@ -1,18 +1,33 @@
-import { FC, ReactNode } from 'react';
-import { Button, Container, createStyles, Divider, Grid, Text } from '@mantine/core';
+import { FC, ReactNode, useMemo } from 'react';
+import {
+  Button,
+  Container,
+  createStyles,
+  CSSObject,
+  Divider,
+  Grid,
+  Loader,
+  Text,
+} from '@mantine/core';
 import { useUserContext } from './users/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import { routes } from './routes';
 import { IconMessagePlus } from '@tabler/icons-react';
 
-export const BasicPage: FC<{ children: ReactNode; title: string; hideAddTopic?: boolean }> = ({
-  children,
-  title,
-  hideAddTopic,
-}) => {
+export const BasicPage: FC<{
+  children: ReactNode;
+  title: string;
+  hideAddTopic?: boolean;
+  loading?: boolean;
+}> = ({ children, title, hideAddTopic, loading }) => {
   const { classes } = useStyles();
   const { user } = useUserContext();
   const navigate = useNavigate();
+
+  const showAddTopic = useMemo(
+    () => !hideAddTopic && user && !loading,
+    [hideAddTopic, loading, user]
+  );
 
   return (
     <Container className={classes.pageContainer}>
@@ -21,7 +36,7 @@ export const BasicPage: FC<{ children: ReactNode; title: string; hideAddTopic?: 
           <h1>{title}</h1>
         </Grid.Col>
         <Grid.Col span={2} className={classes.addTopics}>
-          {!hideAddTopic && user && (
+          {showAddTopic && (
             <Button onClick={() => navigate(routes.topicCreate)}>
               <IconMessagePlus className={classes.iconMargin} />
               Add Topic
@@ -29,14 +44,33 @@ export const BasicPage: FC<{ children: ReactNode; title: string; hideAddTopic?: 
           )}
         </Grid.Col>
       </Grid>
-      {children}
-      <Divider mt="1.25rem" />
-      <Text c="dimmed" className={classes.theEnd}>
-        - The End -
-      </Text>
+      {loading ? (
+        <Container pt={250}>
+          <Loader sx={loaderStyle} size="150px" color="#45b5ff" />
+        </Container>
+      ) : (
+        <>
+          {children}
+          <Divider mt="1.25rem" />
+          <Text c="dimmed" className={classes.theEnd}>
+            - The End -
+          </Text>
+        </>
+      )}
     </Container>
   );
 };
+
+function loaderStyle(): CSSObject {
+  return {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 'auto',
+  };
+}
 
 const useStyles = createStyles(() => ({
   pageContainer: {
