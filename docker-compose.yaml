@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  web:
+    build: ./web
+    image: brandonbarrstudentdev/tweeter-web:latest
+    ports:
+      - "5187:80"
+
+  api:
+    build: ./api
+    image: brandonbarrstudentdev/tweeter-api:latest
+    ports:
+      - "7192:80"
