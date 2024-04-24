@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using tweeter.Data;
 using tweeter.Features.Users;
+using tweeter.Features.UserTopics;
 using tweeter.Shared;
 
 namespace tweeter.Features.Topics;
@@ -12,6 +13,13 @@ namespace tweeter.Features.Topics;
 public class CreateTopicRequest: IRequest<Response<TopicGetDto>>
 {
     public string Name { get; set; }
+    public int UserId { get; set; }
+    
+    public CreateTopicRequest(int userId, string name)
+    {
+        UserId = userId;
+        Name = name;
+    }
 }
 
 public class CreateTopicRequestHandler : IRequestHandler<CreateTopicRequest, Response<TopicGetDto>>
@@ -19,18 +27,18 @@ public class CreateTopicRequestHandler : IRequestHandler<CreateTopicRequest, Res
     private readonly DataContext _dataContext;
     private readonly IValidator<CreateTopicRequest> _validator;
     private readonly IMapper _mapper;
-    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
 
     public CreateTopicRequestHandler(
         DataContext dataContext,
         IValidator<CreateTopicRequest> validator,
         IMapper mapper,
-        SignInManager<User> signInManager)
+        UserManager<User> userManager)
     {
         _dataContext = dataContext;
         _validator = validator;
         _mapper = mapper;
-        _signInManager = signInManager;
+        _userManager = userManager;
     }
     
     public async Task<Response<TopicGetDto>> Handle(CreateTopicRequest request, CancellationToken cancellationToken)
@@ -44,27 +52,35 @@ public class CreateTopicRequestHandler : IRequestHandler<CreateTopicRequest, Res
         }
         
         var nameExists = await _dataContext.Set<Topic>()
-            .AnyAsync(x => x.Name.ToLower() == request.Name.ToLower());
+            .AnyAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken: cancellationToken);
 
         if (nameExists)
         {
             return Error.AsResponse<TopicGetDto>("Name already exists", nameof(request.Name));
         }
         
-        var currentUser = await _signInManager.GetSignedInUserAsync();
+        var user = await _userManager.FindByIdAsync($"{request.UserId}");
 
-        if (currentUser is null)
+        if (user is null)
         {
-            return Error.AsResponse<TopicGetDto>("No user signed in");
+            return Error.AsResponse<TopicGetDto>("Must be signed in", "user");
         }
         
         var topic = _mapper.Map<Topic>(request);
         
-        topic.CreatedByUser = currentUser;
+        topic.CreatedByUser = user;
         topic.CreatedDate = DateTimeOffset.Now;
         
         _dataContext.Add(topic);
-        await _dataContext.SaveChangesAsync();
+        
+        _dataContext.Add(new UserTopic
+        {
+            UserId = user.Id,
+            Topic = topic
+            
+        });
+        
+        await _dataContext.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<TopicGetDto>(topic).AsResponse();
     }

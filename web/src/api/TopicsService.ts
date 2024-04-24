@@ -148,7 +148,7 @@ export class TopicsService {
   /**
    *
    */
-  static getAllTopicsByUserId(
+  static getAllSubscribedTopics(
     params: {
       /**  */
       userId: number;
@@ -156,7 +156,7 @@ export class TopicsService {
     options: IRequestOptions = {}
   ): Promise<TopicGetDtoListResponse> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/topics/users/{userId}';
+      let url = basePath + '/api/topics/subscriptions/{userId}';
       url = url.replace('{userId}', params['userId'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);

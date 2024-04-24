@@ -15,6 +15,7 @@ type UserContextProps = {
   userSubscriptionTopicIds?: number[];
   subscribe: (topicId: number) => void;
   unsubscribe: (topicId: number) => void;
+  addTopicId: (topicId: number) => void;
 };
 
 export const UserProvider: FC<UserProviderProps> = ({ children }) => {
@@ -75,6 +76,7 @@ export const UserProvider: FC<UserProviderProps> = ({ children }) => {
       value={{
         user,
         setUser: setUserAndTopicIds,
+        addTopicId,
         subscribe,
         unsubscribe,
         userSubscriptionTopicIds: topicIds,

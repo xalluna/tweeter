@@ -13,6 +13,8 @@ import {
   Grid,
   Textarea,
   rem,
+  Collapse,
+  Tooltip,
 } from '@mantine/core';
 import { FC, useMemo } from 'react';
 import { CreatePostRequest, PostDetailDto, TopicDetailDto } from '../api/index.defs';
@@ -23,12 +25,33 @@ import { formatDate } from '../helpers/dateFormatter';
 import { error, success } from '../services/helpers/notification';
 import { useUserContext } from '../users/useUserContext';
 import { useTopicsContext } from './useTopicsContext';
+import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
+import { IconMessageCircle2Filled } from '@tabler/icons-react';
+import { useAsyncFn } from 'react-use';
 
 export const Topic: FC<{
   topic: TopicDetailDto;
 }> = ({ topic }) => {
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
+  const { user } = useUserContext();
+  const [isOpen, { toggle, close }] = useDisclosure();
+
+  const hasComments = useMemo(() => topic.posts?.length !== 0, [topic.posts?.length]);
+
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    offset: 60,
+  });
+
+  const onCommentClick = () => {
+    if (!isOpen) {
+      scrollIntoView({
+        alignment: 'center',
+      });
+    }
+
+    toggle();
+  };
 
   return (
     <Paper
@@ -52,24 +75,35 @@ export const Topic: FC<{
             </div>
           </Group>
 
-          {topic.id && <Subscription topicId={topic.id} />}
+          {topic.id && user?.id && (
+            <Flex dir="row">
+              <Tooltip label="Leave a Comment">
+                <Button p={5} mr={10} onClick={onCommentClick}>
+                  <IconMessageCircle2Filled />
+                </Button>
+              </Tooltip>
+
+              <Subscription topicId={topic.id} createdByUserId={topic.createdByUserId ?? 0} />
+            </Flex>
+          )}
         </Group>
 
-        {topic.posts && topic.posts?.length > 0 ? (
+        {topic.posts && hasComments ? (
           <Stack pl={50}>
             {topic.posts.map((post, index) => {
               return <Post post={post} key={index} />;
             })}
           </Stack>
         ) : (
-          <>
+          <Collapse in={!isOpen} transitionDuration={250} transitionTimingFunction="ease-in">
             <Divider />
             <Text c="dimmed" className={classes.noComments}>
               - No Comments -
             </Text>
-          </>
+          </Collapse>
         )}
-        <CreateComment topicId={topic.id} />
+        <CreateComment topicId={topic.id} isOpen={isOpen} close={close} />
+        <Text ref={targetRef}> </Text>
       </Stack>
     </Paper>
   );
@@ -77,7 +111,9 @@ export const Topic: FC<{
 
 const CreateComment: FC<{
   topicId?: number;
-}> = ({ topicId }) => {
+  isOpen: boolean;
+  close: () => void;
+}> = ({ topicId, isOpen, close }) => {
   const { addPost } = useTopicsContext();
   const { user } = useUserContext();
 
@@ -92,13 +128,14 @@ const CreateComment: FC<{
 
   const handleCancel = () => {
     form.reset();
+    close();
   };
 
-  const handleCreatePost = async (values: CreatePostRequest) => {
+  const [createPostState, handleCreatePost] = useAsyncFn(async (values: CreatePostRequest) => {
     const response = await PostsService.createPost({
       body: {
         ...values,
-        userId: user?.id,
+        userId: user?.id ?? 0,
       } as CreatePostRequest,
     });
 
@@ -108,11 +145,10 @@ const CreateComment: FC<{
     }
 
     if (response.data && topicId) addPost(topicId, response.data);
-
     success('Comment posted!');
     handleCancel();
     return response.data;
-  };
+  });
 
   const disabled = useMemo(
     () => form.values.content === '' && !!topicId,
@@ -123,36 +159,50 @@ const CreateComment: FC<{
     <>
       {user && (
         <>
-          <Divider />
-
-          <form onSubmit={form.onSubmit(handleCreatePost)}>
-            <Grid>
-              <Grid.Col
-                style={{
-                  alignContent: 'center',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  margin: 'auto',
-                }}
-                span={1}
-              >
-                <MessageAvatar createdByUserName={user.userName?.charAt(0)} />
-              </Grid.Col>
-              <Grid.Col span={11}>
-                <Textarea placeholder="Write a comment..." {...form.getInputProps('content')} />
-              </Grid.Col>
-            </Grid>
-            {form.isDirty() && (
-              <Flex justify="flex-end">
-                <Button type="button" color="gray" mt={10} mr={5} onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button type="submit" mt={10} ml={5} disabled={disabled}>
-                  Post
-                </Button>
-              </Flex>
-            )}
-          </form>
+          <Collapse transitionDuration={100} in={isOpen}>
+            <Divider pb={15} />
+            <form onSubmit={form.onSubmit(handleCreatePost)}>
+              <Grid>
+                <Grid.Col
+                  style={{
+                    alignContent: 'center',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    margin: 'auto',
+                  }}
+                  span={1}
+                >
+                  <MessageAvatar createdByUserName={user.userName?.charAt(0)} />
+                </Grid.Col>
+                <Grid.Col span={11}>
+                  <Textarea placeholder="Write a comment..." {...form.getInputProps('content')} />
+                </Grid.Col>
+              </Grid>
+              {form.isDirty() && (
+                <Flex justify="flex-end">
+                  <Button
+                    type="button"
+                    color="gray"
+                    mt={10}
+                    mr={5}
+                    disabled={createPostState.loading}
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    mt={10}
+                    ml={5}
+                    loading={createPostState.loading}
+                    disabled={disabled}
+                  >
+                    Post
+                  </Button>
+                </Flex>
+              )}
+            </form>
+          </Collapse>
         </>
       )}
     </>

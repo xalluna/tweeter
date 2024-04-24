@@ -5,12 +5,10 @@ import { TopicsService } from '../../api/TopicsService';
 import { useUserContext } from '../../users/useUserContext';
 import { error } from '../../services/helpers/notification';
 import { BasicPage } from '../../BasicPage';
-import { TopicsDisplay } from '../allTopics/TopicsListingPage';
+import { TopicsDisplay } from '../topics/TopicsListingPage';
 import { useTopicsContext } from '../../topics/useTopicsContext';
 
 export const HomePage: FC = () => {
-  const { classes } = useStyles();
-
   const { topics, setTopics } = useTopicsContext();
   const { user } = useUserContext();
 
@@ -30,22 +28,26 @@ export const HomePage: FC = () => {
 
   return (
     <BasicPage title="Home Page">
-      {user ? (
-        <TopicsDisplay topics={topics} />
-      ) : (
-        <Text className={classes.signedInView} align="center" size="xl">
-          Must be signed in to view
-        </Text>
-      )}
+      {user ? <TopicsDisplay topics={topics} /> : <SignInWarning />}
     </BasicPage>
+  );
+};
+
+export const SignInWarning: FC = () => {
+  const { classes } = useStyles();
+
+  return (
+    <Text className={classes.signedInView} align="center" size="xl">
+      Sign in to view.
+    </Text>
   );
 };
 
 const useStyles = createStyles(() => ({
   signedInView: {
-    backgroundColor: '#3098dd',
-    color: 'black',
-    borderRadius: 10,
+    backgroundColor: 'rgba(15, 44, 64, 0.5)',
+    color: 'rgba(255,255,255,0.75)',
+    borderRadius: 5,
     fontWeight: 600,
     paddingTop: 5,
     paddingBottom: 15,

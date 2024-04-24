@@ -26,7 +26,7 @@ export const TopicsListingPage: FC = () => {
   }, [fetchTopics]);
 
   return (
-    <BasicPage title="Latest Tweets">
+    <BasicPage title="Latest Topics">
       <TopicsDisplay topics={topics} />
     </BasicPage>
   );

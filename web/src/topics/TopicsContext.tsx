@@ -14,6 +14,7 @@ type TopicsContextProps = {
 
 export const TopicsProvider: FC<TopicsProviderProps> = ({ children }) => {
   const [topics, setTopics] = useState<TopicDetailDto[]>();
+
   const addPost = (topicId: number, post: PostDetailDto) => {
     if (!topics) return;
 
