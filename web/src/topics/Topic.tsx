@@ -22,12 +22,13 @@ import { Subscription } from '../subscriptions/Subscription';
 import { useForm } from '@mantine/form';
 import { PostsService } from '../api/PostsService';
 import { formatDate } from '../helpers/dateFormatter';
-import { error, success } from '../services/helpers/notification';
+import { success } from '../services/helpers/notification';
 import { useUserContext } from '../users/useUserContext';
 import { useTopicsContext } from './useTopicsContext';
 import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
 import { IconMessageCircle2Filled } from '@tabler/icons-react';
 import { useAsyncFn } from 'react-use';
+import { getFormErrors } from '../helpers/getFormErrors';
 
 export const Topic: FC<{
   topic: TopicDetailDto;
@@ -139,9 +140,9 @@ const CreateComment: FC<{
       } as CreatePostRequest,
     });
 
-    if (response.hasErrors) {
-      error(response.errors?.[0].message);
-      handleCancel();
+    if (response.hasErrors && response.errors) {
+      form.setErrors(getFormErrors(response.errors));
+      return response.errors;
     }
 
     if (response.data && topicId) addPost(topicId, response.data);
