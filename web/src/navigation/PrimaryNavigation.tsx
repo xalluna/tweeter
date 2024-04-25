@@ -24,7 +24,7 @@ export function PrimaryNavigation(): React.ReactElement {
         </NavButton>
         <Flex align={'center'} gap={25}>
           <Flex gap={10}>
-            <NavButton route={routes.subscriptions}>Subscription</NavButton>
+            <NavButton route={routes.subscriptions}>Subscriptions</NavButton>
           </Flex>
           <Flex gap={10}>
             <NavButton route={routes.topics}>All Topics</NavButton>
