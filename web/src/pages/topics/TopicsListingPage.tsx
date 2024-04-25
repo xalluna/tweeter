@@ -1,6 +1,6 @@
-import { FC, useEffect } from 'react';
-import { useAsyncFn } from 'react-use';
-import { Stack } from '@mantine/core';
+import { FC } from 'react';
+import { useAsyncRetry } from 'react-use';
+import { Divider, Stack, Text } from '@mantine/core';
 import { TopicsService } from '../../api/TopicsService';
 import { error } from '../../services/helpers/notification';
 import { useTopicsContext } from '../../topics/useTopicsContext';
@@ -11,7 +11,7 @@ import { TopicDetailDto } from '../../api/index.defs';
 export const TopicsListingPage: FC = () => {
   const { topics, setTopics } = useTopicsContext();
 
-  const [topicsState, fetchTopics] = useAsyncFn(async () => {
+  const fetchTopics = useAsyncRetry(async () => {
     const response = await TopicsService.getAllTopics();
     if (response.hasErrors) {
       error(response.errors?.[0].message);
@@ -21,24 +21,26 @@ export const TopicsListingPage: FC = () => {
     return response.data;
   });
 
-  useEffect(() => {
-    fetchTopics();
-  }, [fetchTopics]);
-
   return (
-    <BasicPage title="Latest Topics" loading={topicsState.loading}>
-      <TopicsDisplay topics={topics} />
+    <BasicPage title="Latest Topics" loading={fetchTopics.loading}>
+      <TopicsDisplay topics={topics} topicRetry={fetchTopics.retry} />
     </BasicPage>
   );
 };
 
-export const TopicsDisplay: FC<{ topics?: TopicDetailDto[] }> = ({ topics }) => {
+export const TopicsDisplay: FC<{
+  topics?: TopicDetailDto[];
+  topicRetry: (userId?: number) => void;
+}> = ({ topics, topicRetry }) => {
   return (
     <Stack spacing="lg">
-      {topics ? (
-        topics.map((topic, index) => <Topic topic={topic} key={index} />)
+      {(topics?.length ?? 0) > 0 ? (
+        topics?.map((topic, index) => <Topic topic={topic} key={index} topicRetry={topicRetry} />)
       ) : (
-        <>No Topics to show</>
+        <Text align="center" size="xl">
+          <Divider pb={15} />
+          No Topics to Show ☹
+        </Text>
       )}
     </Stack>
   );

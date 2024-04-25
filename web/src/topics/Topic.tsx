@@ -15,6 +15,7 @@ import {
   rem,
   Collapse,
   Tooltip,
+  Modal,
 } from '@mantine/core';
 import { FC, useMemo } from 'react';
 import { CreatePostRequest, PostDetailDto, TopicDetailDto } from '../api/index.defs';
@@ -22,17 +23,18 @@ import { Subscription } from '../subscriptions/Subscription';
 import { useForm } from '@mantine/form';
 import { PostsService } from '../api/PostsService';
 import { formatDate } from '../helpers/dateFormatter';
-import { success } from '../services/helpers/notification';
+import { error, success } from '../services/helpers/notification';
 import { useUserContext } from '../users/useUserContext';
 import { useTopicsContext } from './useTopicsContext';
 import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
-import { IconMessageCircle2Filled } from '@tabler/icons-react';
+import { IconMessageCircle2Filled, IconX } from '@tabler/icons-react';
 import { useAsyncFn } from 'react-use';
 import { getFormErrors } from '../helpers/getFormErrors';
 
 export const Topic: FC<{
   topic: TopicDetailDto;
-}> = ({ topic }) => {
+  topicRetry: () => void;
+}> = ({ topic, topicRetry }) => {
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
   const { user } = useUserContext();
@@ -92,7 +94,7 @@ export const Topic: FC<{
         {topic.posts && hasComments ? (
           <Stack pl={50}>
             {topic.posts.map((post, index) => {
-              return <Post post={post} key={index} />;
+              return <Post post={post} key={index} topicRetry={topicRetry} />;
             })}
           </Stack>
         ) : (
@@ -210,29 +212,87 @@ const CreateComment: FC<{
   );
 };
 
-const Post: FC<{ post: PostDetailDto }> = ({ post }) => {
+const Post: FC<{ post: PostDetailDto; topicRetry: () => void }> = ({ post, topicRetry }) => {
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
+  const { user } = useUserContext();
+  const [isOpen, { open, close }] = useDisclosure(false);
+
+  const [deleteState, handleDelete] = useAsyncFn(async (id: number) => {
+    const response = await PostsService.deletePost({ id: id });
+
+    if (response.hasErrors && response.errors) {
+      error(response.errors?.[0].message);
+      return response.errors;
+    }
+
+    success('Comment Deleted');
+    topicRetry();
+    close();
+    return response.data;
+  });
 
   return (
-    <Paper
-      bg={colors.secondaryBackgroundColors[1]}
-      withBorder
-      radius="md"
-      className={classes.comment}
-    >
-      <Group>
-        <MessageAvatar createdByUserName={post.createdByUserName?.charAt(0)} />
-        <MessageCreatedInfo
-          createdByUserName={post.createdByUserName}
-          createdDate={post.createdDate}
-        />
-      </Group>
+    <>
+      <Paper
+        bg={
+          post.isDeleted ? colors.secondaryBackgroundColors[3] : colors.secondaryBackgroundColors[1]
+        }
+        withBorder
+        radius="md"
+        className={classes.comment}
+        mih={100}
+      >
+        {post.isDeleted ? (
+          <Text align="center" color="grey" pt={15}>
+            Comment Removed
+          </Text>
+        ) : (
+          <>
+            <Group align="flex-start" className={classes.topicGroup}>
+              <Group>
+                <MessageAvatar createdByUserName={post.createdByUserName?.charAt(0)} />
+                <MessageCreatedInfo
+                  createdByUserName={post.createdByUserName}
+                  createdDate={post.createdDate}
+                />
+              </Group>
 
-      <TypographyStylesProvider className={classes.body}>
-        <div className={classes.content}>{post.content}</div>
-      </TypographyStylesProvider>
-    </Paper>
+              {post.userId === user?.id && (
+                <Flex dir="row">
+                  <Tooltip label="Delete Comment">
+                    <Button compact variant="light" p={5} mr={10} onClick={open}>
+                      <IconX size={15} />
+                    </Button>
+                  </Tooltip>
+                </Flex>
+              )}
+            </Group>
+
+            <TypographyStylesProvider className={classes.body}>
+              <div className={classes.content}>{post.content}</div>
+            </TypographyStylesProvider>
+          </>
+        )}
+      </Paper>
+      <Modal centered withCloseButton={false} opened={isOpen} onClose={close}>
+        <Modal.Header>Are you sure you want to delete your comment?</Modal.Header>
+        <Divider />
+        <Flex justify="flex-end">
+          <Button color="gray" mt={10} mr={5} onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            mt={10}
+            ml={5}
+            onClick={() => handleDelete(post.id ?? 0)}
+            loading={deleteState.loading}
+          >
+            Delete
+          </Button>
+        </Flex>
+      </Modal>
+    </>
   );
 };
 

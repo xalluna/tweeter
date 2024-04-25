@@ -1,5 +1,21 @@
-import { ActionIcon, CSSObject, Flex, MantineTheme, Menu, Navbar, Image } from '@mantine/core';
-import { IconLogin, IconLogout, IconRegistered, IconUser } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  CSSObject,
+  Flex,
+  MantineTheme,
+  Menu,
+  Navbar,
+  Image,
+  Text,
+} from '@mantine/core';
+import {
+  IconBookmarksFilled,
+  IconBrandTwitterFilled,
+  IconLogin,
+  IconLogout,
+  IconRegistered,
+  IconUser,
+} from '@tabler/icons-react';
 import React, { FC } from 'react';
 import { NavButton } from './NavButton';
 import { useNavbarHeight } from '../hooks/useNavbarHeight';
@@ -23,11 +39,23 @@ export function PrimaryNavigation(): React.ReactElement {
           <Image maw={navbarHeight - 16} src="./BirdClipartLogo.png" />
         </NavButton>
         <Flex align={'center'} gap={25}>
+          {user && (
+            <Flex gap={10}>
+              <NavButton route={routes.subscriptions}>
+                <Flex align="center">
+                  <IconBookmarksFilled />
+                  <Text ml={5}>Subscriptions</Text>
+                </Flex>
+              </NavButton>
+            </Flex>
+          )}
           <Flex gap={10}>
-            <NavButton route={routes.subscriptions}>Subscriptions</NavButton>
-          </Flex>
-          <Flex gap={10}>
-            <NavButton route={routes.topics}>All Topics</NavButton>
+            <NavButton route={routes.topics}>
+              <Flex align="center">
+                <IconBrandTwitterFilled />
+                <Text ml={5}>All Topics</Text>
+              </Flex>
+            </NavButton>
           </Flex>
 
           <Menu>
