@@ -16,6 +16,7 @@ import {
   Collapse,
   Tooltip,
   Modal,
+  FocusTrap,
 } from '@mantine/core';
 import { FC, useMemo } from 'react';
 import { CreatePostRequest, PostDetailDto, TopicDetailDto } from '../api/index.defs';
@@ -177,8 +178,11 @@ const CreateComment: FC<{
                 >
                   <MessageAvatar createdByUserName={user.userName?.charAt(0)} />
                 </Grid.Col>
+
                 <Grid.Col span={11}>
-                  <Textarea placeholder="Write a comment..." {...form.getInputProps('content')} />
+                  <FocusTrap active={isOpen}>
+                    <Textarea placeholder="Write a comment..." {...form.getInputProps('content')} />
+                  </FocusTrap>
                 </Grid.Col>
               </Grid>
               {form.isDirty() && (

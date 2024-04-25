@@ -47,24 +47,18 @@ export const serviceOptions: ServiceOptions = {
 };
 
 // Instance selector
-export function axios(
-  configs: IRequestConfig,
-  resolve: (p: any) => void,
-  reject: (p: any) => void
-): Promise<any> {
+export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject: (p: any) => void): Promise<any> {
   if (serviceOptions.axios) {
-    const instance = serviceOptions.axios;
-
-    return instance
+    return serviceOptions.axios
       .request(configs)
       .then((res) => {
         resolve(res.data);
       })
       .catch((err) => {
-        if (err.response && err.response.status === 400) {
-          const errorResponse = err.response.data;
+        if (err.response && err.response.status === 400) { 
+          const errorResponse = err.response.data; 
           resolve(errorResponse);
-        } else {
+        } else { 
           reject(err);
         }
       });
@@ -73,22 +67,17 @@ export function axios(
   }
 }
 
-export function getConfigs(
-  method: string,
-  contentType: string,
-  url: string,
-  options: any
-): IRequestConfig {
+export function getConfigs(method: string, contentType: string, url: string, options: any): IRequestConfig {
   const configs: IRequestConfig = {
     loading: serviceOptions.loading,
     showError: serviceOptions.showError,
     ...options,
     method,
-    url,
+    url
   };
   configs.headers = {
     ...options.headers,
-    'Content-Type': contentType,
+    'Content-Type': contentType
   };
   return configs;
 }
