@@ -11,9 +11,10 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { useUserContext } from './users/useUserContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { routes } from './routes';
 import { IconHelp, IconMessagePlus } from '@tabler/icons-react';
+import { NavLink } from 'react-router-dom';
 
 export const BasicPage: FC<{
   children: ReactNode;
@@ -24,6 +25,7 @@ export const BasicPage: FC<{
 }> = ({ children, title, hideAddTopic, isHomePage, loading }) => {
   const { classes } = useStyles();
   const { user } = useUserContext();
+  const location = useLocation().pathname;
   const navigate = useNavigate();
 
   const showAddTopic = useMemo(
@@ -39,9 +41,15 @@ export const BasicPage: FC<{
             {title}
             {isHomePage && (
               <Tooltip label="Consists of all subscribed topics with the most recent two posts from each topic.">
-                <Text span ml={5} color="white">
+                <NavLink
+                  onClick={() =>
+                    window.open('https://youtu.be/zkjETTa5w1I?si=NnVhPZSHkPfT9kTN&t=29', '_blank')
+                  }
+                  to={location}
+                  className={classes.infoButton}
+                >
                   <IconHelp />
-                </Text>
+                </NavLink>
               </Tooltip>
             )}
           </h1>
@@ -89,6 +97,18 @@ const useStyles = createStyles(() => ({
   pageContainer: {
     color: '#e6e6e6',
     paddingBottom: 25,
+  },
+
+  infoButton: {
+    color: 'white',
+    backgroundColor: 'transparent',
+    cursor: 'default',
+    marginLeft: 5,
+
+    ':hover': {
+      backgroundColor: 'transparent',
+      cursor: 'default',
+    },
   },
 
   iconMargin: {
