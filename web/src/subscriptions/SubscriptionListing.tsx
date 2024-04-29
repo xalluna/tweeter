@@ -28,7 +28,7 @@ export const SubscriptionListing: FC = () => {
 
   return (
     <BasicPage title="Subscriptions" loading={topicsState.loading}>
-      {user ? <TopicsDisplay topics={topics} /> : <SignInWarning />}
+      {user ? <TopicsDisplay topics={topics} topicRetry={fetchTopics} /> : <SignInWarning />}
     </BasicPage>
   );
 };
