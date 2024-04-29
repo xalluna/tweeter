@@ -7,8 +7,10 @@ import { useTopicsContext } from '../../topics/useTopicsContext';
 import { Topic } from '../../topics/Topic';
 import { BasicPage } from '../../BasicPage';
 import { TopicDetailDto } from '../../api/index.defs';
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const TopicsListingPage: FC = () => {
+  useDocumentTitle('Topics');
   const { topics, setTopics } = useTopicsContext();
 
   const fetchTopics = useAsyncRetry(async () => {

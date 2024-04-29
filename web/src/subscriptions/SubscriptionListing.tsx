@@ -7,8 +7,10 @@ import { error } from '../services/helpers/notification';
 import { useTopicsContext } from '../topics/useTopicsContext';
 import { useUserContext } from '../users/useUserContext';
 import { SignInWarning } from '../pages/home/HomePage';
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const SubscriptionListing: FC = () => {
+  useDocumentTitle('Subscriptions');
   const { topics, setTopics } = useTopicsContext();
   const { user } = useUserContext();
 

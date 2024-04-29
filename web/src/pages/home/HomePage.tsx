@@ -7,8 +7,10 @@ import { error } from '../../services/helpers/notification';
 import { BasicPage } from '../../BasicPage';
 import { TopicsDisplay } from '../topics/TopicsListingPage';
 import { useTopicsContext } from '../../topics/useTopicsContext';
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const HomePage: FC = () => {
+  useDocumentTitle('Home');
   const { topics, setTopics } = useTopicsContext();
   const { user } = useUserContext();
 
