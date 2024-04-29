@@ -11,15 +11,13 @@ import {
 import { PrimaryNavigation } from './navigation/PrimaryNavigation';
 import { AppRoutes } from './routes/AppRoutes';
 import { useNavbarHeight } from './hooks/useNavbarHeight';
-import { NavLink, useLocation } from 'react-router-dom';
-import { CSSProperties, FC } from 'react';
+import { CSSProperties, DetailedHTMLProps, FC, HTMLAttributes, PropsWithChildren } from 'react';
 import { useAsync } from 'react-use';
 import { TopicsProvider } from './topics/TopicsContext';
 
 const App: FC = () => {
   const { navbarHeight } = useNavbarHeight();
   const scrollAreaSx = useScrollAreaSx(navbarHeight);
-  const location = useLocation().pathname;
 
   const userState = useAsync(async () => {
     await new Promise((r) => setTimeout(r, 350));
@@ -37,9 +35,9 @@ const App: FC = () => {
             <Box sx={useContainerSx}>
               <AppRoutes />
             </Box>
-            <NavLink style={navLinkStyle} onClick={() => sphealingGood()} to={location}>
+            <TotallyNotALinkToSpheal style={navLinkStyle} onClick={() => sphealingGood()}>
               <Center sx={footerSx}>(≖ᴗ≖✿)</Center>
-            </NavLink>
+            </TotallyNotALinkToSpheal>
           </ScrollArea>
         ) : (
           <Container>
@@ -52,6 +50,12 @@ const App: FC = () => {
 };
 
 export default App;
+
+const TotallyNotALinkToSpheal: FC<
+  PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>>
+> = ({ children, ...props }) => {
+  return <div {...props}>{children}</div>;
+};
 
 function footerSx(theme: MantineTheme): CSSObject {
   return {
@@ -86,6 +90,7 @@ const navLinkStyle: CSSProperties = {
   fontStyle: 'unset',
   color: 'white',
   textDecoration: 'none',
+  cursor: 'pointer',
 };
 
 function loaderStyle(): CSSObject {
