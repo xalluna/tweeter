@@ -11,12 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import { routes } from '../../routes';
 import { SignInWarning } from '../home/HomePage';
 import { getFormErrors } from '../../helpers/getFormErrors';
+import { useDocumentTitle } from '@mantine/hooks';
 
 const initialValues: CreateTopicRequest = {
   name: '',
 } as const;
 
 export const TopicCreatePage: FC = () => {
+  useDocumentTitle('Topics | Create');
   const { user, addTopicId } = useUserContext();
   const navigate = useNavigate();
   const form = useForm({
