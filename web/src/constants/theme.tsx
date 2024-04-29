@@ -8,7 +8,7 @@ export const appTheme: MantineThemeOverride = {
   colors: {
     primaryColors: ['#3098dd', '#20618c', '#174563', '#0f2c40', '#45b5ff'],
     backgroundColor: ['#121212'],
-    secondaryBackgroundColors: ['#242424', '#1e1e1e', '#181818'],
+    secondaryBackgroundColors: ['#242424', '#1e1e1e', '#181818', '#131313'],
     red: [
       '#e60e00',
       '#ED2E21',

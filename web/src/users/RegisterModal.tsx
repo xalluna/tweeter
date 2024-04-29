@@ -2,10 +2,11 @@ import { Modal, TextInput, PasswordInput, Button, Flex } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FC } from 'react';
 import { UsersService } from '../api/UsersService';
-import { error, success } from '../services/helpers/notification';
+import { success } from '../services/helpers/notification';
 import { useUserContext } from './useUserContext';
 import { UserCreateDto } from '../types/users';
 import { useAsyncFn } from 'react-use';
+import { getFormErrors } from '../helpers/getFormErrors';
 
 type RegisterModalProps = {
   open: boolean;
@@ -34,9 +35,9 @@ export const RegisterModal: FC<RegisterModalProps> = ({ open, close }) => {
   const [registerState, handleRegister] = useAsyncFn(async (values: UserCreateDto) => {
     const response = await UsersService.createUser({ body: values });
 
-    if (response.hasErrors) {
-      error(response.errors?.[0].message);
-      handleClose();
+    if (response.hasErrors && response.errors) {
+      form.setErrors(getFormErrors(response.errors));
+      return response.errors;
     }
 
     setUser(response.data);

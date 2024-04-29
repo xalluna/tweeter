@@ -16,13 +16,17 @@ const replacements = [
     original: 'export const serviceOptions: ServiceOptions = {};',
     new: 'export const serviceOptions: ServiceOptions = {\n  axios: axiosStatic,\n  loading: true,\n};',
   },
+  {
+    // prettier-ignore
+    original: 'reject(err);',
+    new: 'if (err.response && err.response.status === 400) { \n          const errorResponse = err.response.data; \n          resolve(errorResponse);\n        } else { \n          reject(err);\n        }',
+  },
 ];
 
 // Function to replace tokens in a string
 function replaceTokens(content, replacements) {
   replacements.forEach((replacement) => {
-    const regex = new RegExp(replacement.original, 'g');
-    content = content.replace(regex, replacement.new);
+    content = content.replace(replacement.original, replacement.new);
   });
 
   return content;

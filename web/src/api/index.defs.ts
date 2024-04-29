@@ -55,7 +55,12 @@ export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject
         resolve(res.data);
       })
       .catch((err) => {
-        reject(err);
+        if (err.response && err.response.status === 400) { 
+          const errorResponse = err.response.data; 
+          resolve(errorResponse);
+        } else { 
+          reject(err);
+        }
       });
   } else {
     throw new Error('please inject yourself instance like axios  ');

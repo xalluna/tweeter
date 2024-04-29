@@ -13,7 +13,7 @@ export const HomePage: FC = () => {
   const { user } = useUserContext();
 
   const [topicsState, fetchTopics] = useAsyncFn(async (userId?: number) => {
-    const response = await TopicsService.getHomePageTopics({ userId: userId ?? 0 });
+    const response = await TopicsService.getHomePageTopics({ userId: userId ?? user?.id ?? 0 });
     if (response.hasErrors) {
       error(response.errors?.[0].message);
     }
@@ -27,8 +27,8 @@ export const HomePage: FC = () => {
   }, [fetchTopics, user?.id]);
 
   return (
-    <BasicPage title="Home Page" loading={topicsState.loading}>
-      {user ? <TopicsDisplay topics={topics} /> : <SignInWarning />}
+    <BasicPage title="Home Page" isHomePage loading={topicsState.loading}>
+      {user ? <TopicsDisplay topicRetry={fetchTopics} topics={topics} /> : <SignInWarning />}
     </BasicPage>
   );
 };

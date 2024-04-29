@@ -2,9 +2,10 @@ import { Modal, TextInput, PasswordInput, Button, Flex } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FC, useMemo } from 'react';
 import { UsersService } from '../api/UsersService';
-import { error, success } from '../services/helpers/notification';
+import { success } from '../services/helpers/notification';
 import { SignInUserDto } from '../types/users';
 import { useUserContext } from './useUserContext';
+import { getFormErrors } from '../helpers/getFormErrors';
 
 type SignInModalProps = {
   open: boolean;
@@ -30,12 +31,12 @@ export const SignInModal: FC<SignInModalProps> = ({ open, close }) => {
   const handleSignIn = async (values: SignInUserDto) => {
     const response = await UsersService.signInUser({ body: values });
 
-    if (response.hasErrors) {
-      error(response.errors?.[0].message);
-      handleClose();
+    if (response.hasErrors && response.errors) {
+      form.setErrors(getFormErrors(response.errors));
+      return response.errors;
     }
-    setUser(response.data);
 
+    setUser(response.data);
     success('Signed in!');
     handleClose();
     return response.data;

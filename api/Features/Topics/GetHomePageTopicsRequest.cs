@@ -48,6 +48,7 @@ public class GetHomePageTopicsRequestHandler: IRequestHandler<GetHomePageTopicsR
         foreach (var topic in topics)
         {
             topic.Posts = topic.Posts
+                .Where(x => !x.IsDeleted)
                 .OrderByDescending(x => x.CreatedDate)
                 .Take(2)
                 .OrderBy(x => x.CreatedDate)

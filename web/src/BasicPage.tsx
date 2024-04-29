@@ -8,20 +8,24 @@ import {
   Grid,
   Loader,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import { useUserContext } from './users/useUserContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { routes } from './routes';
-import { IconMessagePlus } from '@tabler/icons-react';
+import { IconHelp, IconMessagePlus } from '@tabler/icons-react';
+import { NavLink } from 'react-router-dom';
 
 export const BasicPage: FC<{
   children: ReactNode;
   title: string;
   hideAddTopic?: boolean;
+  isHomePage?: boolean;
   loading?: boolean;
-}> = ({ children, title, hideAddTopic, loading }) => {
+}> = ({ children, title, hideAddTopic, isHomePage, loading }) => {
   const { classes } = useStyles();
   const { user } = useUserContext();
+  const location = useLocation().pathname;
   const navigate = useNavigate();
 
   const showAddTopic = useMemo(
@@ -33,7 +37,22 @@ export const BasicPage: FC<{
     <Container className={classes.pageContainer}>
       <Grid align="end" justify="flex-end">
         <Grid.Col span={10}>
-          <h1>{title}</h1>
+          <h1>
+            {title}
+            {isHomePage && (
+              <Tooltip label="Consists of all subscribed topics with the most recent two posts from each topic.">
+                <NavLink
+                  onClick={() =>
+                    window.open('https://youtu.be/zkjETTa5w1I?si=NnVhPZSHkPfT9kTN&t=29', '_blank')
+                  }
+                  to={location}
+                  className={classes.infoButton}
+                >
+                  <IconHelp />
+                </NavLink>
+              </Tooltip>
+            )}
+          </h1>
         </Grid.Col>
         <Grid.Col span={2} className={classes.addTopics}>
           {showAddTopic && (
@@ -52,9 +71,11 @@ export const BasicPage: FC<{
         <>
           {children}
           <Divider mt="1.25rem" />
-          <Text c="dimmed" className={classes.theEnd}>
-            - The End -
-          </Text>
+          {!hideAddTopic && (
+            <Text c="dimmed" className={classes.theEnd}>
+              ✨ The End ✨
+            </Text>
+          )}
         </>
       )}
     </Container>
@@ -76,6 +97,18 @@ const useStyles = createStyles(() => ({
   pageContainer: {
     color: '#e6e6e6',
     paddingBottom: 25,
+  },
+
+  infoButton: {
+    color: 'white',
+    backgroundColor: 'transparent',
+    cursor: 'default',
+    marginLeft: 5,
+
+    ':hover': {
+      backgroundColor: 'transparent',
+      cursor: 'default',
+    },
   },
 
   iconMargin: {

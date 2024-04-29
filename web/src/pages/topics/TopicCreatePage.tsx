@@ -4,12 +4,13 @@ import { useForm } from '@mantine/form';
 import { useUserContext } from '../../users/useUserContext';
 import { useAsyncFn } from 'react-use';
 import { TopicsService } from '../../api/TopicsService';
-import { error, success } from '../../services/helpers/notification';
+import { success } from '../../services/helpers/notification';
 import { CreateTopicRequest } from '../../api/index.defs';
 import { BasicPage } from '../../BasicPage';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../../routes';
 import { SignInWarning } from '../home/HomePage';
+import { getFormErrors } from '../../helpers/getFormErrors';
 
 const initialValues: CreateTopicRequest = {
   name: '',
@@ -27,9 +28,9 @@ export const TopicCreatePage: FC = () => {
       body: { userId: user?.id, name: values.name },
     });
 
-    if (response.hasErrors) {
-      error(response.errors?.[0].message);
-      return response.data;
+    if (response.hasErrors && response.errors) {
+      form.setErrors(getFormErrors(response.errors));
+      return response.errors;
     }
 
     response.data?.id && addTopicId(response.data.id);

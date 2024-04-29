@@ -38,17 +38,17 @@ public class SignInUserRequestHandler : IRequestHandler<SignInUserRequest, Respo
             .Users
             .FirstOrDefaultAsync(x => x.NormalizedUserName == normalizedUserName, c);
         
-        if (user is null) return Error.AsResponse<UserDetailDto>("Username or password is incorrect");
+        if (user is null) return Error.AsResponse<UserDetailDto>("Username or password is incorrect", "password");
 
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, false);
         
-        if (!result.Succeeded) return Error.AsResponse<UserDetailDto>("Username or password is incorrect");
-        if (result.IsNotAllowed)  return Error.AsResponse<UserDetailDto>("User is not allowed to sign in");
-        if (result.IsLockedOut) return Error.AsResponse<UserDetailDto>("User is locked out");
+        if (!result.Succeeded) return Error.AsResponse<UserDetailDto>("Username or password is incorrect", "password");
+        if (result.IsNotAllowed)  return Error.AsResponse<UserDetailDto>("User is not allowed to sign in", "password");
+        if (result.IsLockedOut) return Error.AsResponse<UserDetailDto>("User is locked out", "password");
 
         if (result.RequiresTwoFactor)
         {
-            return Error.AsResponse<UserDetailDto>("2FA not implemented 💔");
+            return Error.AsResponse<UserDetailDto>("2FA not implemented 💔", "password");
         }
 
         var topicIds = await _dataContext.Set<UserTopic>()
